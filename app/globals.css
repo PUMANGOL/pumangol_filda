@@ -1,0 +1,120 @@
+@import "tailwindcss";
+
+:root {
+  --pumangol-red: #057143;
+  --pumangol-red-dark: #045a36;
+  --pumangol-yellow: #ffb81c;
+  --pumangol-yellow-light: #ffd966;
+  --background: #ffffff;
+  --foreground: #212529;
+  --muted: #6c757d;
+  --border: #e9ecef;
+  --surface: #f8f9fa;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-pumangol-red: var(--pumangol-red);
+  --color-pumangol-red-dark: var(--pumangol-red-dark);
+  --color-pumangol-yellow: var(--pumangol-yellow);
+  --color-pumangol-yellow-light: var(--pumangol-yellow-light);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-surface: var(--surface);
+  --font-sans: var(--font-plus-jakarta);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-plus-jakarta), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--pumangol-yellow) 40%, white);
+  color: var(--foreground);
+}
+
+.section-padding {
+  @apply px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24;
+}
+
+.container-main {
+  @apply mx-auto w-full max-w-7xl;
+}
+
+.gradient-hero {
+  background: linear-gradient(
+    135deg,
+    #1a1d20 0%,
+    #343a40 40%,
+    #495057 100%
+  );
+}
+
+.gradient-brand {
+  background: linear-gradient(
+    135deg,
+    var(--pumangol-red) 0%,
+    var(--pumangol-red-dark) 100%
+  );
+}
+
+.gradient-accent {
+  background: linear-gradient(
+    135deg,
+    var(--pumangol-yellow) 0%,
+    var(--pumangol-yellow-light) 100%
+  );
+}
+
+.card-hover {
+  @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl;
+}
+
+.pattern-dots {
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--pumangol-red) 8%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--pumangol-yellow) 40%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 12px transparent;
+  }
+}
+
+.qr-pulse {
+  animation: pulse-soft 2.5s ease-in-out infinite;
+}
