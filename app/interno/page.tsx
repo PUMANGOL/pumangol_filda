@@ -5,6 +5,8 @@ import { Card } from "@/components/ui/Card";
 import { ROUTES } from "@/lib/constants";
 import { getRegistosInteresseDisponiveis } from "@/lib/dashboard/queries";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Qualificar Lead | Pumangol FILDA 2026",
   description: "Formulário interno para colaboradores Pumangol qualificarem leads na FILDA 2026.",
