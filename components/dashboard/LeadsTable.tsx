@@ -3,7 +3,9 @@
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { FilterSelect } from "@/components/ui/FilterSelect";
 import { PIPELINE_STAGES } from "@/lib/constants";
+import { exportLeadsXlsx } from "@/lib/export/xlsx-export";
 import type { Lead } from "@/lib/types";
 
 function stageVariant(stage: string): "default" | "red" | "yellow" | "green" | "blue" | "gray" {
@@ -18,54 +20,16 @@ function stageVariant(stage: string): "default" | "red" | "yellow" | "green" | "
   return map[stage] || "default";
 }
 
-function exportToCSV(leads: Lead[]) {
-  const headers = [
-    "ID",
-    "Empresa",
-    "Contacto",
-    "Email",
-    "Telefone",
-    "Tipo",
-    "Produto",
-    "Etapa",
-    "Interesse",
-    "Potencial",
-    "Responsável",
-    "Criado",
-    "Próximo Follow-up",
-  ];
-  const rows = leads.map((l) =>
-    [
-      l.id,
-      l.company,
-      l.contactName,
-      l.email,
-      l.phone,
-      l.type,
-      l.product,
-      l.stage,
-      l.interestLevel,
-      l.businessPotential,
-      l.assignedTo,
-      l.createdAt,
-      l.nextFollowUp || "",
-    ].join(",")
-  );
-  const csv = [headers.join(","), ...rows].join("\n");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `leads-filda-2026-${new Date().toISOString().split("T")[0]}.csv`;
-  link.click();
-  URL.revokeObjectURL(url);
-}
-
 export function LeadsTable({ leads }: { leads: Lead[] }) {
   const [search, setSearch] = useState("");
   const [stageFilter, setStageFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [exporting, setExporting] = useState(false);
+
+  const typeOptions = useMemo(() => {
+    return [...new Set(leads.map((lead) => lead.type))].sort();
+  }, [leads]);
 
   const filtered = useMemo(() => {
     return leads.filter((lead) => {
@@ -73,7 +37,8 @@ export function LeadsTable({ leads }: { leads: Lead[] }) {
         !search ||
         lead.company.toLowerCase().includes(search.toLowerCase()) ||
         lead.contactName.toLowerCase().includes(search.toLowerCase()) ||
-        lead.email.toLowerCase().includes(search.toLowerCase());
+        lead.email.toLowerCase().includes(search.toLowerCase()) ||
+        lead.id.toLowerCase().includes(search.toLowerCase());
       const matchesStage = !stageFilter || lead.stage === stageFilter;
       const matchesType = !typeFilter || lead.type === typeFilter;
       return matchesSearch && matchesStage && matchesType;
@@ -83,6 +48,15 @@ export function LeadsTable({ leads }: { leads: Lead[] }) {
   const upcomingFollowUps = leads.filter(
     (l) => l.nextFollowUp && l.stage !== "Convertida"
   ).length;
+
+  async function handleExport() {
+    setExporting(true);
+    try {
+      await exportLeadsXlsx(filtered);
+    } finally {
+      setExporting(false);
+    }
+  }
 
   return (
     <div className="space-y-4">
@@ -105,33 +79,29 @@ export function LeadsTable({ leads }: { leads: Lead[] }) {
               className="w-full rounded-xl border border-border py-2.5 pl-10 pr-4 text-sm focus:border-pumangol-red focus:outline-none focus:ring-2 focus:ring-pumangol-red/20"
             />
           </div>
-          <select
+          <FilterSelect
             value={stageFilter}
-            onChange={(e) => setStageFilter(e.target.value)}
-            className="rounded-xl border border-border px-4 py-2.5 text-sm focus:border-pumangol-red focus:outline-none"
-          >
-            <option value="">Todas as etapas</option>
-            {PIPELINE_STAGES.map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-          <select
+            onValueChange={setStageFilter}
+            allLabel="Todas as etapas"
+            options={PIPELINE_STAGES}
+          />
+          <FilterSelect
             value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            className="rounded-xl border border-border px-4 py-2.5 text-sm focus:border-pumangol-red focus:outline-none"
-          >
-            <option value="">Todos os tipos</option>
-            <option value="Potencial Cliente">Potencial Cliente</option>
-            <option value="Cliente">Cliente</option>
-            <option value="Parceiro">Parceiro</option>
-            <option value="Investidor">Investidor</option>
-          </select>
+            onValueChange={setTypeFilter}
+            allLabel="Todos os tipos"
+            options={typeOptions}
+          />
         </div>
-        <Button variant="outline" size="sm" onClick={() => exportToCSV(filtered)}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleExport}
+          disabled={exporting}
+        >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          Exportar Excel
+          {exporting ? "A exportar..." : "Exportar Excel"}
         </Button>
       </div>
 

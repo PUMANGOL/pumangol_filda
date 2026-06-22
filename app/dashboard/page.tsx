@@ -1,16 +1,23 @@
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { DashboardMobileNav } from "@/components/dashboard/DashboardMobileNav";
+import { DashboardUserMenu } from "@/components/dashboard/DashboardUserMenu";
 import { LeadsTable } from "@/components/dashboard/LeadsTable";
 import { Pipeline } from "@/components/dashboard/Pipeline";
 import { StatsCards } from "@/components/dashboard/StatsCards";
-import { MOCK_LEADS, MOCK_STATS, PIPELINE_COUNTS } from "@/lib/mock-data";
+import { getSession } from "@/lib/auth/session";
+import { getDashboardData } from "@/lib/dashboard/queries";
 
 export const metadata = {
   title: "Dashboard Comercial | Pumangol FILDA 2026",
   description: "Gestão e acompanhamento de leads captadas na FILDA 2026.",
 };
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const [user, { leads, stats, pipelineCounts }] = await Promise.all([
+    getSession(),
+    getDashboardData(),
+  ]);
+
   return (
     <div className="flex min-h-screen bg-surface">
       <DashboardSidebar />
@@ -25,17 +32,10 @@ export default function DashboardPage() {
               Gestão de Leads · FILDA 2026
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="hidden text-sm text-muted sm:block">
-              Última actualização: hoje, 09:45
-            </span>
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-pumangol-red text-sm font-bold text-white">
-              AC
-            </div>
-          </div>
+          <DashboardUserMenu nome={user?.nome ?? ""} />
         </header>
 
-        <main className="flex-1 overflow-auto p-4 pb-20 sm:p-6 lg:p-8 lg:pb-8">
+        <main className="flex-1 overflow-auto p-4 pb-[calc(4.75rem+env(safe-area-inset-bottom,0px))] sm:p-6 md:pb-6 lg:p-8 lg:pb-8">
           <div className="mb-6 hidden lg:block">
             <h1 className="text-2xl font-bold text-gray-900">
               Dashboard Comercial
@@ -46,13 +46,13 @@ export default function DashboardPage() {
           </div>
 
           <div className="space-y-6">
-            <StatsCards stats={MOCK_STATS} />
-            <Pipeline counts={PIPELINE_COUNTS} />
+            <StatsCards stats={stats} />
+            <Pipeline counts={pipelineCounts} />
             <div>
               <h2 className="mb-4 text-lg font-semibold text-gray-900">
                 Leads Registadas
               </h2>
-              <LeadsTable leads={MOCK_LEADS} />
+              <LeadsTable leads={leads} />
             </div>
           </div>
         </main>

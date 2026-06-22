@@ -12,7 +12,7 @@ const highlights = [
   },
   {
     title: "Rede Nacional de Postos",
-    description: "Mais de 2.000 postos de abastecimento em todo o território nacional.",
+    description: "Mais de 80 postos de abastecimento em todo o território nacional.",
     icon: (
       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />

@@ -27,3 +27,17 @@ export type DashboardStats = {
   potentialPartners: number;
   closedDeals: number;
 };
+
+export type RegistoInteresse = {
+  id: number;
+  nome: string;
+  empresa: string;
+  cargo: string;
+  telefone: string;
+  email: string;
+  tipoContacto: string;
+  areas: string[];
+  observacoes: string | null;
+  consentimentoRgpd: boolean;
+  criadoEm: string;
+};

@@ -36,11 +36,6 @@ export function Footer() {
                   Área Colaboradores
                 </Link>
               </li>
-              <li>
-                <Link href={ROUTES.dashboard} className="hover:text-pumangol-yellow transition-colors">
-                  Dashboard Comercial
-                </Link>
-              </li>
             </ul>
           </div>
 

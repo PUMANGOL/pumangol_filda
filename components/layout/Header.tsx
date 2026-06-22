@@ -46,9 +46,6 @@ export function Header() {
           <Button href={ROUTES.registar} variant="outline" size="sm">
             Registar Interesse
           </Button>
-          <Button href={ROUTES.dashboard} variant="ghost" size="sm">
-            Dashboard
-          </Button>
         </div>
 
         <button

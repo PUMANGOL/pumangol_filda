@@ -3,13 +3,15 @@ import Link from "next/link";
 import { InternoForm } from "@/components/forms/InternoForm";
 import { Card } from "@/components/ui/Card";
 import { ROUTES } from "@/lib/constants";
+import { getRegistosInteresseDisponiveis } from "@/lib/dashboard/queries";
 
 export const metadata = {
   title: "Qualificar Lead | Pumangol FILDA 2026",
   description: "Formulário interno para colaboradores Pumangol qualificarem leads na FILDA 2026.",
 };
 
-export default function InternoPage() {
+export default async function InternoPage() {
+  const registos = await getRegistosInteresseDisponiveis();
   return (
     <div className="min-h-screen bg-surface">
       <header className="border-b border-border bg-white">
@@ -50,7 +52,7 @@ export default function InternoPage() {
           </div>
 
           <Card padding="lg" className="shadow-lg">
-            <InternoForm />
+            <InternoForm registos={registos} />
           </Card>
         </div>
       </main>

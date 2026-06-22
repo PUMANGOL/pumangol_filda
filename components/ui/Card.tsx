@@ -1,4 +1,6 @@
 import { type ReactNode } from "react";
+import { Card as ShadcnCard } from "@/components/ui/primitives/card";
+import { cn } from "@/lib/utils";
 
 type CardProps = {
   children: ReactNode;
@@ -15,15 +17,15 @@ const paddings = {
 
 export function Card({
   children,
-  className = "",
+  className,
   hover = false,
   padding = "md",
 }: CardProps) {
   return (
-    <div
-      className={`rounded-2xl border border-border bg-white shadow-sm ${paddings[padding]} ${hover ? "card-hover" : ""} ${className}`}
+    <ShadcnCard
+      className={cn(paddings[padding], hover && "card-hover", className)}
     >
       {children}
-    </div>
+    </ShadcnCard>
   );
 }

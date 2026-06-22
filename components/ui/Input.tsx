@@ -1,4 +1,8 @@
 import { type InputHTMLAttributes, type TextareaHTMLAttributes } from "react";
+import { Input as ShadcnInput } from "@/components/ui/primitives/input";
+import { Textarea as ShadcnTextarea } from "@/components/ui/primitives/textarea";
+import { Label } from "@/components/ui/primitives/label";
+import { cn } from "@/lib/utils";
 
 type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   label: string;
@@ -10,7 +14,7 @@ export function Input({
   label,
   error,
   required,
-  className = "",
+  className,
   id,
   ...props
 }: InputProps) {
@@ -18,16 +22,17 @@ export function Input({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={inputId} className="text-sm font-medium text-gray-700">
+      <Label htmlFor={inputId}>
         {label}
-        {required && <span className="text-pumangol-red ml-0.5">*</span>}
-      </label>
-      <input
+        {required && <span className="text-primary">*</span>}
+      </Label>
+      <ShadcnInput
         id={inputId}
-        className={`w-full rounded-xl border border-border bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 transition-colors focus:border-pumangol-red focus:outline-none focus:ring-2 focus:ring-pumangol-red/20 ${error ? "border-red-500" : ""} ${className}`}
+        aria-invalid={!!error}
+        className={cn(error && "border-destructive", className)}
         {...props}
       />
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
   );
 }
@@ -42,7 +47,7 @@ export function Textarea({
   label,
   error,
   required,
-  className = "",
+  className,
   id,
   ...props
 }: TextareaProps) {
@@ -50,17 +55,17 @@ export function Textarea({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={inputId} className="text-sm font-medium text-gray-700">
+      <Label htmlFor={inputId}>
         {label}
-        {required && <span className="text-pumangol-red ml-0.5">*</span>}
-      </label>
-      <textarea
+        {required && <span className="text-primary">*</span>}
+      </Label>
+      <ShadcnTextarea
         id={inputId}
-        rows={4}
-        className={`w-full resize-y rounded-xl border border-border bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 transition-colors focus:border-pumangol-red focus:outline-none focus:ring-2 focus:ring-pumangol-red/20 ${error ? "border-red-500" : ""} ${className}`}
+        aria-invalid={!!error}
+        className={cn(error && "border-destructive", className)}
         {...props}
       />
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
   );
 }

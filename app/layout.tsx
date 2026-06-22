@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Montserrat } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const plusJakarta = Plus_Jakarta_Sans({
-  variable: "--font-plus-jakarta",
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const pumangolDisplay = localFont({
+  src: "../public/logo-font.ttf",
+  variable: "--font-pumangol",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -20,7 +27,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt" className={`${plusJakarta.variable} h-full antialiased`}>
+    <html
+      lang="pt"
+      className={`${montserrat.variable} ${pumangolDisplay.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
   );

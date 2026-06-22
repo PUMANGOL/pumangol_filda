@@ -20,7 +20,9 @@ export const ROUTES = {
   home: "/",
   registar: "/registar",
   interno: "/interno",
+  login: "/login",
   dashboard: "/dashboard",
+  dashboardInteresses: "/dashboard/interesses",
 } as const;
 
 export const CONTACT_TYPES = [

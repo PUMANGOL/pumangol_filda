@@ -7,9 +7,23 @@
   --pumangol-yellow-light: #ffd966;
   --background: #ffffff;
   --foreground: #212529;
-  --muted: #6c757d;
+  --muted: #f1f3f5;
+  --muted-foreground: #6c757d;
   --border: #e9ecef;
   --surface: #f8f9fa;
+  --card: #ffffff;
+  --card-foreground: #212529;
+  --primary: #057143;
+  --primary-foreground: #ffffff;
+  --secondary: #343a40;
+  --secondary-foreground: #ffffff;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --accent: #ffb81c;
+  --accent-foreground: #212529;
+  --input: #e9ecef;
+  --ring: #057143;
+  --radius: 0.75rem;
 }
 
 @theme inline {
@@ -20,9 +34,27 @@
   --color-pumangol-yellow: var(--pumangol-yellow);
   --color-pumangol-yellow-light: var(--pumangol-yellow-light);
   --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-surface: var(--surface);
-  --font-sans: var(--font-plus-jakarta);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --font-sans: var(--font-montserrat), system-ui, sans-serif;
+  --font-display: var(--font-pumangol), var(--font-montserrat), system-ui, sans-serif;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
 * {
@@ -36,8 +68,23 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-plus-jakarta), system-ui, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+}
+
+/* Montserrat: corpo · logo-font: títulos, destaques e acções */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-display,
+button,
+.font-bold,
+.font-extrabold,
+.font-black {
+  font-family: var(--font-display);
 }
 
 ::selection {
@@ -117,4 +164,11 @@ body {
 
 .qr-pulse {
   animation: pulse-soft 2.5s ease-in-out infinite;
+}
+
+/* Compat: text-muted usado como cor de texto secundário */
+@layer utilities {
+  .text-muted {
+    color: var(--muted-foreground);
+  }
 }

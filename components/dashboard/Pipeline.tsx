@@ -1,6 +1,5 @@
 import { PIPELINE_STAGES } from "@/lib/constants";
-
-type PipelineCounts = Record<string, number>;
+import type { PipelineCounts } from "@/lib/dashboard/queries";
 
 const stageColors = [
   "bg-gray-400",

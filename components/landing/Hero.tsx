@@ -55,11 +55,6 @@ export function Hero() {
             <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
               <div className="absolute inset-0 bg-gradient-to-br from-pumangol-red/80 via-gray-800 to-pumangol-red/40" />
               <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
-                <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm">
-                  <svg className="h-12 w-12 text-pumangol-red" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 2.18l8 4v8.82c0 4.54-3.07 8.86-8 9.92C7.07 21.86 4 17.54 4 13V8.18l8-4z" />
-                  </svg>
-                </div>
                 <h3 className="text-2xl font-bold text-white">Stand Pumangol</h3>
                 <p className="mt-2 text-sm text-gray-300">FILDA 2026 · Pavilhão Central</p>
                 <div className="mt-6 flex gap-3">
@@ -71,7 +66,7 @@ export function Hero() {
             </div>
             <div className="absolute -bottom-4 -left-4 rounded-2xl bg-pumangol-red px-6 py-4 shadow-xl">
               <p className="text-3xl font-bold text-white">80+</p>
-              <p className="text-xs font-medium text-white/80">Postos</p>
+              <p className="text-xs font-medium text-white/80">Postos de Abastecimento</p>
             </div>
           </div>
         </div>
