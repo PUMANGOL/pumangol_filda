@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Input, Textarea } from "@/components/ui/Input";
@@ -17,6 +18,18 @@ export function RegistarForm() {
     FormData
   >(registarInteresse, null);
   const [interests, setInterests] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!state) return;
+    if (state.success) {
+      toast.success("O seu interesse foi registado com sucesso!", {
+        description: "A equipa Pumangol entrará em contacto consigo brevemente.",
+        duration: 6000,
+      });
+    } else if (state.error) {
+      toast.error(state.error);
+    }
+  }, [state]);
 
   function setInterest(area: string, selected: boolean) {
     setInterests((prev) => {
@@ -46,11 +59,10 @@ export function RegistarForm() {
           </svg>
         </div>
         <h2 className="mt-6 text-2xl font-bold text-gray-900">
-          Registo submetido com sucesso!
+          O seu interesse foi registado com sucesso!
         </h2>
         <p className="mt-3 text-muted">
-          Obrigado pelo seu interesse. A equipa Pumangol entrará em contacto
-          consigo brevemente.
+          Obrigado. A equipa Pumangol entrará em contacto consigo brevemente.
         </p>
         <Button href="/" variant="outline" className="mt-6">
           Voltar à Página Inicial
@@ -63,15 +75,6 @@ export function RegistarForm() {
 
   return (
     <form action={formAction} className="space-y-8">
-      {state?.error && (
-        <div
-          role="alert"
-          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-        >
-          {state.error}
-        </div>
-      )}
-
       <div>
         <h2 className="text-lg font-semibold text-gray-900 border-b border-border pb-3">
           Dados Pessoais

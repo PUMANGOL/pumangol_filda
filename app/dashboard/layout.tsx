@@ -1,18 +1,18 @@
 import { redirect } from "next/navigation";
-import { AUTH_ROUTES } from "@/lib/auth/config";
-import { getSession, purgeExpiredSessions } from "@/lib/auth/session";
+import { getSession } from "@/lib/auth";
+import { AppShell } from "@/components/app-shell";
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  purgeExpiredSessions();
+  const session = await getSession();
+  if (!session) redirect("/login");
 
-  const user = await getSession();
-  if (!user) {
-    redirect(`${AUTH_ROUTES.login}?callbackUrl=${AUTH_ROUTES.dashboard}`);
-  }
-
-  return children;
+  return (
+    <AppShell user={session.user}>
+      {children}
+    </AppShell>
+  );
 }

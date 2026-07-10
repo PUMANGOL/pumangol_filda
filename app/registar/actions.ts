@@ -1,156 +1,123 @@
 "use server";
 
-import { getDb } from "@/lib/db";
-import { registoAreasInteresse, registosInteresse } from "@/lib/db/schema";
-import { CONTACT_TYPES, INTEREST_AREAS } from "@/lib/constants";
+import { z } from "zod";
+import { db } from "@/lib/db";
+import { leads } from "@/lib/db/schema";
+import { calculateScore } from "@/lib/scoring";
+
+const schema = z.object({
+  nome: z.string().min(2, "Nome obrigatório"),
+  empresa: z.string().min(1, "Empresa obrigatória"),
+  cargo: z.string().min(1, "Cargo obrigatório"),
+  telefone: z.string().min(6, "Telefone obrigatório"),
+  email: z.string().email("E-mail inválido"),
+  tipo_contacto: z.string().min(1, "Tipo de contacto obrigatório"),
+  areas: z
+    .union([z.string(), z.array(z.string())])
+    .transform((v) => (Array.isArray(v) ? v : [v]))
+    .optional()
+    .default([]),
+  observacoes: z.string().optional(),
+  consentimento_rgpd: z
+    .string()
+    .transform((v) => v === "on")
+    .refine((v) => v === true, { message: "É necessário dar consentimento" }),
+});
+
+const PROFILE_MAP: Record<string, string> = {
+  Cliente: "particular",
+  "Potencial Cliente": "particular",
+  Parceiro: "parceiro",
+  Fornecedor: "fornecedor",
+  Investidor: "outro",
+  Outro: "outro",
+};
+
+const SOLUTION_MAP: Record<string, string> = {
+  "Frota+": "frota_mais",
+  Combustíveis: "combustiveis",
+  Lubrificantes: "lubrificantes",
+  "Rede de Postos": "via",
+  "Soluções Empresariais": "combustiveis",
+  "Parcerias Comerciais": "patrocinios",
+};
 
 export type RegistarFormState = {
   success?: boolean;
   error?: string;
-  fieldErrors?: Partial<
-    Record<
-      | "nome"
-      | "empresa"
-      | "cargo"
-      | "telefone"
-      | "email"
-      | "tipo_contacto"
-      | "areas"
-      | "consentimento_rgpd",
-      string
-    >
-  >;
+  fieldErrors?: Record<string, string>;
 } | null;
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function getString(formData: FormData, key: string): string {
-  const value = formData.get(key);
-  return typeof value === "string" ? value.trim() : "";
-}
-
-function validateForm(formData: FormData) {
-  const fieldErrors: NonNullable<RegistarFormState>["fieldErrors"] = {};
-
-  const nome = getString(formData, "nome");
-  const empresa = getString(formData, "empresa");
-  const cargo = getString(formData, "cargo");
-  const telefone = getString(formData, "telefone");
-  const email = getString(formData, "email");
-  const tipoContacto = getString(formData, "tipo_contacto");
-  const observacoes = getString(formData, "observacoes");
-  const consentimento = formData.get("consentimento_rgpd") === "on";
-  const areas = formData
-    .getAll("areas")
-    .filter((value): value is string => typeof value === "string")
-    .map((value) => value.trim())
-    .filter(Boolean);
-
-  if (!nome) fieldErrors.nome = "Indique o seu nome completo.";
-  if (!empresa) fieldErrors.empresa = "Indique o nome da empresa.";
-  if (!cargo) fieldErrors.cargo = "Indique o seu cargo.";
-  if (!telefone) fieldErrors.telefone = "Indique um número de telefone.";
-  if (!email) {
-    fieldErrors.email = "Indique um endereço de e-mail.";
-  } else if (!EMAIL_REGEX.test(email)) {
-    fieldErrors.email = "Introduza um endereço de e-mail válido.";
-  }
-  if (!tipoContacto) {
-    fieldErrors.tipo_contacto = "Seleccione o tipo de contacto.";
-  } else if (!(CONTACT_TYPES as readonly string[]).includes(tipoContacto)) {
-    fieldErrors.tipo_contacto = "Tipo de contacto inválido.";
-  }
-
-  const validAreas = areas.filter((area) =>
-    (INTEREST_AREAS as readonly string[]).includes(area)
-  );
-  if (areas.length > 0 && validAreas.length !== areas.length) {
-    fieldErrors.areas = "Uma ou mais áreas de interesse são inválidas.";
-  }
-
-  if (!consentimento) {
-    fieldErrors.consentimento_rgpd =
-      "É necessário autorizar o tratamento dos dados pessoais.";
-  }
-
-  return {
-    fieldErrors,
-    data: {
-      nome,
-      empresa,
-      cargo,
-      telefone,
-      email,
-      tipoContacto,
-      observacoes: observacoes || null,
-      consentimento,
-      areas: validAreas,
-    },
-  };
-}
 
 export async function registarInteresse(
   _prevState: RegistarFormState,
   formData: FormData
 ): Promise<RegistarFormState> {
-  const { fieldErrors, data } = validateForm(formData);
+  const raw = {
+    nome: formData.get("nome"),
+    empresa: formData.get("empresa"),
+    cargo: formData.get("cargo"),
+    telefone: formData.get("telefone"),
+    email: formData.get("email"),
+    tipo_contacto: formData.get("tipo_contacto"),
+    areas: formData.getAll("areas"),
+    observacoes: formData.get("observacoes") ?? "",
+    consentimento_rgpd: formData.get("consentimento_rgpd"),
+  };
 
-  if (Object.keys(fieldErrors).length > 0) {
-    return {
-      success: false,
-      error: "Corrija os campos assinalados e tente novamente.",
-      fieldErrors,
-    };
+  const parsed = schema.safeParse(raw);
+
+  const fieldErrors: Record<string, string> = {};
+
+  if (!parsed.success) {
+    for (const [key, msgs] of Object.entries(
+      parsed.error.flatten().fieldErrors
+    )) {
+      fieldErrors[key] = msgs?.[0] ?? "Campo inválido";
+    }
   }
 
-  const hoje = new Date().toISOString().slice(0, 10);
+  if (!raw.areas || (raw.areas as string[]).length === 0) {
+    fieldErrors.areas = "Seleccione pelo menos uma área de interesse";
+  }
+
+  if (Object.keys(fieldErrors).length > 0) {
+    return { fieldErrors };
+  }
+
+  const { nome, empresa, cargo, telefone, email, tipo_contacto, areas, observacoes } =
+    parsed.data!;
+
+  const profile = PROFILE_MAP[tipo_contacto] ?? "outro";
+  const solutions = (areas as string[]).map((a) => SOLUTION_MAP[a] ?? a);
+
+  const scoreInput = {
+    profile,
+    solutions,
+    purchaseTimeline: "apenas_info",
+    wantsContact: true,
+  };
+
+  const score = calculateScore(scoreInput);
 
   try {
-    await getDb().transaction(async (tx) => {
-      const [registo] = await tx
-        .insert(registosInteresse)
-        .values({
-          nome: data.nome,
-          empresa: data.empresa,
-          cargo: data.cargo,
-          telefone: data.telefone,
-          email: data.email,
-          tipoContacto: data.tipoContacto,
-          observacoes: data.observacoes,
-          consentimentoRgpd: true,
-          consentimentoEm: hoje,
-        })
-        .returning({ id: registosInteresse.pkRegistosInteresse });
-
-      if (data.areas.length > 0) {
-        await tx.insert(registoAreasInteresse).values(
-          data.areas.map((area) => ({
-            pkRegistoAreasInteresse: registo.id,
-            area,
-          }))
-        );
-      }
+    await db.insert(leads).values({
+      fullName: nome,
+      phone: telefone,
+      email,
+      profile,
+      companyName: empresa,
+      jobTitle: cargo,
+      solutions,
+      notes: observacoes || null,
+      purchaseTimeline: "apenas_info",
+      wantsContact: true,
+      gdprConsent: true,
+      ...score,
     });
 
     return { success: true };
-  } catch (error) {
-    console.error("Erro ao registar interesse:", error);
-
-    const message =
-      error instanceof Error ? error.message.toLowerCase() : "";
-
-    if (message.includes("connect") || message.includes("econnrefused")) {
-      return {
-        success: false,
-        error:
-          "Não foi possível ligar à base de dados. Tente novamente mais tarde.",
-      };
-    }
-
-    return {
-      success: false,
-      error:
-        "Ocorreu um erro ao submeter o registo. Tente novamente ou contacte a equipa Pumangol.",
-    };
+  } catch (err) {
+    console.error("[registarInteresse] INSERT ERROR:", err);
+    return { error: "Erro ao registar. Por favor tente novamente." };
   }
 }

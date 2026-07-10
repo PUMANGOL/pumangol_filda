@@ -87,7 +87,7 @@ export function Select({
       />
 
       <SelectRoot
-        value={value || undefined}
+        value={value}
         onValueChange={handleValueChange}
         disabled={disabled}
         required={required}

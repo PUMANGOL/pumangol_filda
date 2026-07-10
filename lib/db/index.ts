@@ -1,37 +1,27 @@
-import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema";
 
-type Database = PostgresJsDatabase<typeof schema>;
+const connectionString = process.env.DATABASE_URL!;
+const isProd = process.env.NODE_ENV === "production";
 
-const globalForDb = globalThis as unknown as {
-  client: ReturnType<typeof postgres> | undefined;
-  db: Database | undefined;
+const globalForDb = globalThis as typeof globalThis & {
+  pgClient?: ReturnType<typeof postgres>;
 };
 
-function createClient() {
-  const url = process.env.DATABASE_URL;
+const client =
+  globalForDb.pgClient ??
+  postgres(connectionString, {
+    max: isProd ? 10 : 3,
+    idle_timeout: isProd ? 30 : 10,
+    connect_timeout: 10,
+  });
 
-  if (!url) {
-    throw new Error(
-      "Variável de ambiente DATABASE_URL em falta."
-    );
-  }
-
-  return postgres(url, { prepare: false });
+if (!isProd) {
+  globalForDb.pgClient = client;
 }
 
-export function getDb(): Database {
-  if (globalForDb.db) {
-    return globalForDb.db;
-  }
+export const db = drizzle(client, { schema });
 
-  const client = globalForDb.client ?? createClient();
-
-  if (process.env.NODE_ENV !== "production") {
-    globalForDb.client = client;
-  }
-
-  globalForDb.db = drizzle(client, { schema });
-  return globalForDb.db;
-}
+/** Backward-compat alias for older modules. */
+export const getDb = () => db;

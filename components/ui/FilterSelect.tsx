@@ -32,8 +32,7 @@ export function FilterSelect({
       onValueChange={(next) => onValueChange(next === ALL_VALUE ? "" : next)}
     >
       <SelectTrigger
-        size="sm"
-        className={cn("w-full bg-white sm:min-w-[11rem] sm:w-auto", className)}
+        className={cn("w-full bg-white sm:min-w-[11rem] sm:w-auto h-8 text-xs", className)}
       >
         <SelectValue />
       </SelectTrigger>

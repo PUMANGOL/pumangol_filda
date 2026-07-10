@@ -5,11 +5,11 @@ type BadgeVariant = "default" | "red" | "yellow" | "green" | "blue" | "gray";
 
 const variantMap = {
   default: "default",
-  red: "red",
-  yellow: "yellow",
-  green: "green",
-  blue: "blue",
-  gray: "gray",
+  red: "A+",
+  yellow: "warning",
+  green: "success",
+  blue: "C",
+  gray: "D",
 } as const;
 
 type BadgeProps = {
