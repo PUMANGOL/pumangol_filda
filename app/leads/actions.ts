@@ -61,9 +61,6 @@ export type CreateLeadResult =
 
 export async function createLead(input: CreateLeadInput): Promise<CreateLeadResult> {
   const session = await getSession();
-  if (!session) {
-    return { success: false, error: "Sessão expirada. Inicie sessão novamente." };
-  }
 
   const parsed = leadSchema.safeParse(input);
   if (!parsed.success) {
@@ -129,9 +126,9 @@ export async function createLead(input: CreateLeadInput): Promise<CreateLeadResu
         scoreContact: score.scoreContact,
         totalScore: score.totalScore,
         classification: score.classification,
-        submittedByUserId: session.user.id,
-        submittedByUsername: session.user.username,
-        submittedByFullName: session.user.fullName,
+        submittedByUserId: session?.user.id,
+        submittedByUsername: session?.user.username,
+        submittedByFullName: session?.user.fullName,
       })
       .returning({ id: leads.id });
 

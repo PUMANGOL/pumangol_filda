@@ -17,6 +17,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/primit
 import { CheckCircle2, ChevronRight, Loader2, User, Building2, Landmark, Handshake, Truck, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createLead, type CreateLeadInput } from "@/app/leads/actions";
+import { COMPANY_SECTORS, JOB_TITLES } from "@/components/lead-form/lead-form-options";
+import { SearchableSelect } from "@/components/lead-form/searchable-select";
 
 type Profile = "particular" | "empresa" | "orgao_publico" | "fornecedor" | "parceiro" | "outro";
 
@@ -114,7 +116,7 @@ const EMPRESA_SOLUTIONS = [
   { value: "lubrificantes", label: "Lubrificantes" },
   { value: "frota_mais", label: "Frota+" },
   { value: "cartao_presente", label: "Cartão Presente" },
-  { value: "angobetumes", label: "Angobetumes" },
+  { value: "angobetumes", label: "Betumes e Emulções" },
   { value: "aviacao", label: "Aviação" },
   { value: "patrocinios", label: "Patrocínios" },
   { value: "outros", label: "Outros" },
@@ -192,7 +194,8 @@ const PROFILE_OPTIONS = [
   { value: "outro", label: "Outro", icon: HelpCircle, desc: "Outro perfil" },
 ];
 
-export function LeadForm({ submittedBy }: { submittedBy: string }) {
+export function LeadForm({ submittedBy }: { submittedBy?: string }) {
+  const isPublic = !submittedBy;
   const router = useRouter();
   const [data, setData] = useState<FormData>(INITIAL);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
@@ -372,19 +375,38 @@ export function LeadForm({ submittedBy }: { submittedBy: string }) {
             <CheckCircle2 className="h-8 w-8 text-green-600" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-slate-900">Lead registada com sucesso!</h2>
+            <h2 className="text-xl font-bold text-slate-900">
+              {isPublic ? "Interesse registado com sucesso!" : "Lead registada com sucesso!"}
+            </h2>
             <p className="text-slate-500 text-sm mt-1">
-              A lead foi classificada e adicionada à base de dados.
+              {isPublic
+                ? "Obrigado pelo seu interesse. A nossa equipa comercial entrará em contacto consigo em breve."
+                : "A lead foi classificada e adicionada à base de dados."}
             </p>
-            <p className="text-xs text-slate-400 mt-1">Registado por: {submittedBy}</p>
+            {!isPublic && submittedBy && (
+              <p className="text-xs text-slate-400 mt-1">Registado por: {submittedBy}</p>
+            )}
           </div>
           <div className="flex gap-3 mt-2">
-            <Button variant="outline" onClick={() => router.push("/leads")}>
-              Ver Leads
-            </Button>
-            <Button onClick={() => { setData(INITIAL); setStep(1); setSubmitted(false); }}>
-              Nova Lead
-            </Button>
+            {isPublic ? (
+              <>
+                <Button variant="outline" onClick={() => router.push("/")}>
+                  Voltar ao início
+                </Button>
+                <Button onClick={() => { setData(INITIAL); setStep(1); setSubmitted(false); }}>
+                  Registar outro
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" onClick={() => router.push("/leads")}>
+                  Ver Leads
+                </Button>
+                <Button onClick={() => { setData(INITIAL); setStep(1); setSubmitted(false); }}>
+                  Nova Lead
+                </Button>
+              </>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -536,11 +558,25 @@ export function LeadForm({ submittedBy }: { submittedBy: string }) {
                 <FieldGroup className="sm:grid-cols-2">
                   <div className="space-y-1.5">
                     <Label required>Sector de actividade</Label>
-                    <Input value={data.sector} onChange={e => set("sector", e.target.value)} placeholder="Ex: Construção, Logística..." error={errors.sector} />
+                    <SearchableSelect
+                      value={data.sector}
+                      onChange={(v) => set("sector", v)}
+                      options={COMPANY_SECTORS}
+                      placeholder="Pesquisar ou seleccionar sector..."
+                      error={errors.sector}
+                      className={LEAD_FORM_FIELD_CLASS}
+                    />
                   </div>
                   <div className="space-y-1.5">
                     <Label required>Cargo / Função</Label>
-                    <Input value={data.jobTitle} onChange={e => set("jobTitle", e.target.value)} placeholder="Ex: Director Comercial" error={errors.jobTitle} />
+                    <SearchableSelect
+                      value={data.jobTitle}
+                      onChange={(v) => set("jobTitle", v)}
+                      options={JOB_TITLES}
+                      placeholder="Pesquisar ou seleccionar cargo..."
+                      error={errors.jobTitle}
+                      className={LEAD_FORM_FIELD_CLASS}
+                    />
                   </div>
                 </FieldGroup>
               </CardContent>
@@ -945,7 +981,7 @@ export function LeadForm({ submittedBy }: { submittedBy: string }) {
             {submitting ? (
               <><Loader2 className="h-4 w-4 animate-spin" /> A submeter...</>
             ) : (
-              "Submeter Lead"
+              isPublic ? "Registar Interesse" : "Submeter Lead"
             )}
           </Button>
         )}

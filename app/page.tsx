@@ -6,13 +6,17 @@ import { About } from "@/components/landing/About";
 import { Products } from "@/components/landing/Products";
 import { Benefits } from "@/components/landing/Benefits";
 import { CTAFinal } from "@/components/landing/CTAFinal";
+import { getSession } from "@/lib/auth";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getSession();
+  const isLoggedIn = !!session;
+
   return (
     <>
-      <Header />
+      <Header isLoggedIn={isLoggedIn} />
       <main className="flex-1">
-        <Hero />
+        <Hero isLoggedIn={isLoggedIn} />
         <QRCodeSection />
         <About />
         <Products />

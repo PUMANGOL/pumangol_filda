@@ -3,21 +3,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Users, PlusCircle, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, Users, PlusCircle, Menu, X } from "lucide-react";
 import { useState } from "react";
 import type { User } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/primitives/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/primitives/alert-dialog";
+import { SidebarUserMenu } from "@/components/account/sidebar-user-menu";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -35,7 +25,6 @@ export function AppShell({
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [logoutOpen, setLogoutOpen] = useState(false);
 
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -90,42 +79,11 @@ export function AppShell({
           })}
         </nav>
 
-        {/* User + logout */}
-        <div className="px-3 py-4 border-t border-border space-y-3">
-          <div className="px-3 py-2">
-            <p className="text-foreground text-sm font-medium truncate">
-              {user.fullName}
-            </p>
-            <p className="text-muted-foreground text-xs truncate">@{user.username}</p>
-          </div>
-          <Button
-            variant="ghost"
-            className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-muted"
-            onClick={() => setLogoutOpen(true)}
-          >
-            <LogOut className="h-4 w-4" />
-            Terminar Sessão
-          </Button>
+        {/* User menu */}
+        <div className="px-3 py-4 border-t border-border">
+          <SidebarUserMenu user={user} onLogout={handleLogout} />
         </div>
       </aside>
-
-      <AlertDialog open={logoutOpen} onOpenChange={setLogoutOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Terminar sessão?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem a certeza que deseja terminar a sessão? Terá de voltar a
-              autenticar-se para aceder ao sistema.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction className="bg-red-500 hover:bg-red-600 text-white" onClick={handleLogout}> 
-              Terminar Sessão
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       {/* Mobile overlay */}
       {mobileOpen && (

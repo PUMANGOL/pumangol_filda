@@ -81,7 +81,7 @@ function ClassificationBar({ classification, count, total }: { classification: s
   return (
     <div className="flex items-center gap-3">
       <span className={cn("text-xs font-bold w-6 shrink-0", cfg.textColor)}>{classification}</span>
-      <div className="flex-1 h-6 bg-slate-100 rounded-full overflow-hidden">
+      <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
         <div
           className={cn("h-full rounded-full transition-all duration-700 flex items-center px-2", cfg.color)}
           style={{ width: `${Math.max(pct, pct > 0 ? 8 : 0)}%` }}

@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { RegistarForm } from "@/components/forms/RegistarForm";
-import { Card } from "@/components/ui/Card";
+import { LeadForm } from "@/components/lead-form/lead-form";
 import { ROUTES } from "@/lib/constants";
 
 export const metadata = {
@@ -24,20 +23,16 @@ export default function RegistarPage() {
       </header>
 
       <main className="container-main section-padding !py-10">
-        <div className="mx-auto max-w-2xl">
-          <div className="mb-8 text-center">
-            <h1 className="text-3xl font-bold text-gray-900">
-              Registar Interesse
-            </h1>
-            <p className="mt-3 text-muted">
+        <div className="mx-auto w-full max-w-6xl px-2 md:px-3 lg:px-4">
+          <div className="mb-6 text-center sm:text-left">
+            <h1 className="text-2xl font-bold text-slate-900">Registar Interesse</h1>
+            <p className="text-slate-500 text-sm mt-1">
               Preencha o formulário para conhecer as soluções da Pumangol e
-              ser contactado pela nossa equipa comercial.
+              ser contactado pela nossa equipa comercial. O formulário adapta-se
+              automaticamente ao perfil seleccionado.
             </p>
           </div>
-
-          <Card padding="lg" className="shadow-lg">
-            <RegistarForm />
-          </Card>
+          <LeadForm />
         </div>
       </main>
     </div>

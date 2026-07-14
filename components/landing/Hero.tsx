@@ -1,7 +1,11 @@
 import { Button } from "@/components/ui/Button";
 import { ROUTES } from "@/lib/constants";
 
-export function Hero() {
+type HeroProps = {
+  isLoggedIn?: boolean;
+};
+
+export function Hero({ isLoggedIn = false }: HeroProps) {
   return (
     <section className="relative overflow-hidden gradient-hero">
       <div className="absolute inset-0 opacity-20">
@@ -42,8 +46,12 @@ export function Hero() {
             </p>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <Button href={ROUTES.registar} variant="primary" size="lg">
-                Registar Interesse
+              <Button
+                href={isLoggedIn ? ROUTES.dashboard : ROUTES.registar}
+                variant="primary"
+                size="lg"
+              >
+                {isLoggedIn ? "Dashboard" : "Registar Interesse"}
               </Button>
               <Button href={ROUTES.registar} variant="outline" size="lg" className="!border-white !text-white hover:!bg-white hover:!text-gray-900">
                 Quero ser Contactado

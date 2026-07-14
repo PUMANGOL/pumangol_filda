@@ -13,8 +13,14 @@ const navLinks = [
   { href: "#qr-code", label: "Registo" },
 ];
 
-export function Header() {
+type HeaderProps = {
+  isLoggedIn?: boolean;
+};
+
+export function Header({ isLoggedIn = false }: HeaderProps) {
   const [open, setOpen] = useState(false);
+  const ctaHref = isLoggedIn ? ROUTES.dashboard : ROUTES.registar;
+  const ctaLabel = isLoggedIn ? "Dashboard" : "Registar Interesse";
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-white/95 backdrop-blur-md">
@@ -43,8 +49,8 @@ export function Header() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Button href={ROUTES.registar} variant="outline" size="sm">
-            Registar Interesse
+          <Button href={ctaHref} variant="outline" size="sm">
+            {ctaLabel}
           </Button>
         </div>
 
@@ -77,8 +83,8 @@ export function Header() {
                 {link.label}
               </a>
             ))}
-            <Button href={ROUTES.registar} fullWidth>
-              Registar Interesse
+            <Button href={ctaHref} fullWidth>
+              {ctaLabel}
             </Button>
           </nav>
         </div>
