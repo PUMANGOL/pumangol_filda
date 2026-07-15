@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/primitives/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/primitives/card";
 import { CheckCircle2, ChevronRight, Loader2, User, Building2, Landmark, Handshake, Truck, HelpCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { BETUMES_EMULSAO_LABEL, cn } from "@/lib/utils";
 import { createLead, type CreateLeadInput } from "@/app/leads/actions";
 import { COMPANY_SECTORS, JOB_TITLES } from "@/components/lead-form/lead-form-options";
 import { SearchableSelect } from "@/components/lead-form/searchable-select";
@@ -116,7 +116,7 @@ const EMPRESA_SOLUTIONS = [
   { value: "lubrificantes", label: "Lubrificantes" },
   { value: "frota_mais", label: "Frota+" },
   { value: "cartao_presente", label: "Cartão Presente" },
-  { value: "angobetumes", label: "Betumes e Emulções" },
+  { value: "angobetumes", label: BETUMES_EMULSAO_LABEL },
   { value: "aviacao", label: "Aviação" },
   { value: "patrocinios", label: "Patrocínios" },
   { value: "outros", label: "Outros" },
@@ -771,7 +771,7 @@ export function LeadForm({ submittedBy }: { submittedBy?: string }) {
 
                     {isEmpresa && data.solutions.includes("angobetumes") && (
                       <div className="space-y-3">
-                        <SectionTitle>Angobetumes</SectionTitle>
+                        <SectionTitle>{BETUMES_EMULSAO_LABEL}</SectionTitle>
                         <div>
                           <Label className="mb-2 block text-sm">Interesse:</Label>
                           <div className="grid sm:grid-cols-2 gap-2">

@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronUp, KeyRound, LogOut } from "lucide-react";
 import type { User } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/primitives/button";
 import {
   AlertDialog,
   AlertDialogAction,

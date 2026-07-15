@@ -24,13 +24,15 @@ export const PROFILE_LABELS: Record<string, string> = {
   outro: "Outro",
 };
 
+export const BETUMES_EMULSAO_LABEL = "Betumes e Emulsão";
+
 export const SOLUTION_LABELS: Record<string, string> = {
   combustiveis: "Combustíveis",
   lubrificantes: "Lubrificantes",
   via: "VIA",
   cartao_presente: "Cartão Presente",
   frota_mais: "Frota+",
-  angobetumes: "Angobetumes",
+  angobetumes: BETUMES_EMULSAO_LABEL,
   aviacao: "Aviação",
   patrocinios: "Patrocínios",
   outros: "Outros",
