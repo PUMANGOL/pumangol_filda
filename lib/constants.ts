@@ -23,6 +23,7 @@ export const ROUTES = {
   login: "/login",
   dashboard: "/dashboard",
   dashboardInteresses: "/dashboard/interesses",
+  myPumangol: "/my-pumangol",
 } as const;
 
 export const CONTACT_TYPES = [

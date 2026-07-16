@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import type { Lead } from "@/lib/db/schema";
 import { formatDate, PROFILE_LABELS, SOLUTION_LABELS } from "@/lib/utils";
+import { appPath, useAppBasePath } from "@/lib/navigation";
 import { LeadDetailModal } from "@/components/leads/lead-detail-modal";
 
 const CLASSIFICATION_VARIANT: Record<string, "A+" | "A" | "B" | "C" | "D" | "FORNECEDOR"> = {
@@ -30,6 +31,7 @@ const CLASSIFICATION_VARIANT: Record<string, "A+" | "A" | "B" | "C" | "D" | "FOR
 };
 
 export function LeadsList() {
+  const basePath = useAppBasePath();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -155,7 +157,7 @@ export function LeadsList() {
             <span className="hidden sm:inline">Exportar</span>
           </Button>
 
-          <Link href="/leads/new">
+          <Link href={appPath(basePath, "/leads/new")}>
             <Button>
               <PlusCircle className="h-4 w-4" />
               <span className="hidden sm:inline">Nova Lead</span>
@@ -178,7 +180,7 @@ export function LeadsList() {
         ) : leads.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-slate-400 gap-3">
             <p>Nenhuma lead encontrada</p>
-            <Link href="/leads/new">
+            <Link href={appPath(basePath, "/leads/new")}>
               <Button variant="outline" size="sm">
                 <PlusCircle className="h-4 w-4" />
                 Registar primeira lead

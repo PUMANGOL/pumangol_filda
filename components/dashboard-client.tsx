@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { formatDate, PROFILE_LABELS, SOLUTION_LABELS, TIMELINE_LABELS } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { appPath, useAppBasePath } from "@/lib/navigation";
 
 interface DashboardData {
   total: number;
@@ -95,6 +96,7 @@ function ClassificationBar({ classification, count, total }: { classification: s
 }
 
 export function DashboardClient() {
+  const basePath = useAppBasePath();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -171,7 +173,7 @@ export function DashboardClient() {
             )}
             Actualizar
           </Button>
-          <Link href="/leads/new">
+          <Link href={appPath(basePath, "/leads/new")}>
             <Button size="sm">
               <PlusCircle className="h-3.5 w-3.5" />
               Nova Lead
@@ -316,7 +318,7 @@ export function DashboardClient() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-base">Leads Recentes</CardTitle>
-          <Link href="/leads">
+          <Link href={appPath(basePath, "/leads")}>
             <Button variant="ghost" size="sm" className="text-primary hover:text-pumangol-red-dark">
               Ver todas
             </Button>

@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { leads } from "@/lib/db/schema";
-import { getSession } from "@/lib/auth";
+import { getSessionOrPortal } from "@/lib/auth/portal";
 import { calculateScore } from "@/lib/scoring";
 
 const leadSchema = z.object({
@@ -60,7 +60,10 @@ export type CreateLeadResult =
   | { success: false; error: string };
 
 export async function createLead(input: CreateLeadInput): Promise<CreateLeadResult> {
-  const session = await getSession();
+  const auth = await getSessionOrPortal();
+  if (!auth) {
+    return { success: false, error: "Não autenticado." };
+  }
 
   const parsed = leadSchema.safeParse(input);
   if (!parsed.success) {
@@ -126,9 +129,11 @@ export async function createLead(input: CreateLeadInput): Promise<CreateLeadResu
         scoreContact: score.scoreContact,
         totalScore: score.totalScore,
         classification: score.classification,
-        submittedByUserId: session?.user.id,
-        submittedByUsername: session?.user.username,
-        submittedByFullName: session?.user.fullName,
+        submittedByUserId: auth.kind === "session" ? auth.userId : null,
+        submittedByUsername:
+          auth.kind === "session" ? auth.username : auth.email,
+        submittedByFullName:
+          auth.kind === "session" ? auth.fullName : auth.email,
       })
       .returning({ id: leads.id });
 

@@ -19,6 +19,7 @@ import { BETUMES_EMULSAO_LABEL, cn } from "@/lib/utils";
 import { createLead, type CreateLeadInput } from "@/app/leads/actions";
 import { COMPANY_SECTORS, JOB_TITLES } from "@/components/lead-form/lead-form-options";
 import { SearchableSelect } from "@/components/lead-form/searchable-select";
+import { appPath, useAppBasePath } from "@/lib/navigation";
 
 type Profile = "particular" | "empresa" | "orgao_publico" | "fornecedor" | "parceiro" | "outro";
 
@@ -197,6 +198,7 @@ const PROFILE_OPTIONS = [
 export function LeadForm({ submittedBy }: { submittedBy?: string }) {
   const isPublic = !submittedBy;
   const router = useRouter();
+  const basePath = useAppBasePath();
   const [data, setData] = useState<FormData>(INITIAL);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -399,7 +401,7 @@ export function LeadForm({ submittedBy }: { submittedBy?: string }) {
               </>
             ) : (
               <>
-                <Button variant="outline" onClick={() => router.push("/leads")}>
+                <Button variant="outline" onClick={() => router.push(appPath(basePath, "/leads"))}>
                   Ver Leads
                 </Button>
                 <Button onClick={() => { setData(INITIAL); setStep(1); setSubmitted(false); }}>

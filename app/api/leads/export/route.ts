@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { leads } from "@/lib/db/schema";
-import { getSession } from "@/lib/auth";
+import { getSessionOrPortal } from "@/lib/auth/portal";
 import { PROFILE_LABELS, SOLUTION_LABELS, TIMELINE_LABELS } from "@/lib/utils";
 import ExcelJS from "exceljs";
 import { desc } from "drizzle-orm";
@@ -17,8 +17,8 @@ function submittedByLabel(
 }
 
 export async function GET(request: NextRequest) {
-  const session = await getSession();
-  if (!session) {
+  const auth = await getSessionOrPortal();
+  if (!auth) {
     return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
   }
 

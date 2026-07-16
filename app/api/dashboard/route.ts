@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { leads } from "@/lib/db/schema";
-import { getSession } from "@/lib/auth";
+import { getSessionOrPortal } from "@/lib/auth/portal";
 import { sql, desc, getTableName } from "drizzle-orm";
 
 export async function GET() {
-  const session = await getSession();
-  if (!session) {
+  const auth = await getSessionOrPortal();
+  if (!auth) {
     return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
   }
 

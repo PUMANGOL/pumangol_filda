@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { leads } from "@/lib/db/schema";
 import { eq, desc, like, or, and, sql } from "drizzle-orm";
-import { getSession } from "@/lib/auth";
+import { getSessionOrPortal } from "@/lib/auth/portal";
 import { calculateScore } from "@/lib/scoring";
 import { z } from "zod";
 
@@ -76,8 +76,8 @@ const leadSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getSession();
-    if (!session) {
+    const auth = await getSessionOrPortal();
+    if (!auth) {
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
@@ -110,6 +110,19 @@ export async function POST(request: NextRequest) {
       wantsContact: data.wantsContact,
     });
 
+    const submittedBy =
+      auth.kind === "session"
+        ? {
+            submittedByUserId: auth.userId,
+            submittedByUsername: auth.username,
+            submittedByFullName: auth.fullName,
+          }
+        : {
+            submittedByUserId: null,
+            submittedByUsername: auth.email,
+            submittedByFullName: auth.email,
+          };
+
     const [lead] = await db
       .insert(leads)
       .values({
@@ -121,9 +134,7 @@ export async function POST(request: NextRequest) {
         scoreContact: score.scoreContact,
         totalScore: score.totalScore,
         classification: score.classification,
-        submittedByUserId: session.user.id,
-        submittedByUsername: session.user.username,
-        submittedByFullName: session.user.fullName,
+        ...submittedBy,
       })
       .returning();
 
@@ -136,8 +147,8 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getSession();
-    if (!session) {
+    const auth = await getSessionOrPortal();
+    if (!auth) {
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
