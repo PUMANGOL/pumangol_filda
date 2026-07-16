@@ -37,6 +37,7 @@ const leadSchema = z.object({
   angobetumesInterest: z.string().optional(),
   angobetumesActivity: z.string().optional(),
   aviacaoOperationType: z.string().optional(),
+  academiaTopics: z.array(z.string()).optional(),
   cardPurposeEmpresa: z.string().optional(),
   supplierArea: z.string().optional(),
   partnerArea: z.string().optional(),
@@ -80,11 +81,22 @@ export async function createLead(input: CreateLeadInput): Promise<CreateLeadResu
   const score = calculateScore({
     profile: data.profile,
     solutions: data.solutions,
+    combustiveisPurpose: data.combustiveisPurpose,
     combustiveisConsumption: data.combustiveisConsumption,
     lubricantVehicleCountEmpresa: data.lubricantVehicleCountEmpresa,
+    lubricantVehicleTypeParticular: data.lubricantVehicleTypeParticular,
     frotaVehicleCount: data.frotaVehicleCount,
+    frotaInterest: data.frotaInterest,
+    angobetumesInterest: data.angobetumesInterest,
+    angobetumesActivity: data.angobetumesActivity,
+    cardPurposeParticular: data.cardPurposeParticular,
+    cardPurposeEmpresa: data.cardPurposeEmpresa,
+    academiaTopics: data.academiaTopics,
+    usesViaApp: data.usesViaApp,
+    isExistingClient: data.isExistingClient,
     purchaseTimeline: data.purchaseTimeline,
     wantsContact: data.wantsContact,
+    contactPreference: data.contactPreference,
   });
 
   try {
@@ -114,6 +126,7 @@ export async function createLead(input: CreateLeadInput): Promise<CreateLeadResu
         angobetumesInterest: data.angobetumesInterest,
         angobetumesActivity: data.angobetumesActivity,
         aviacaoOperationType: data.aviacaoOperationType,
+        academiaTopics: data.academiaTopics,
         cardPurposeEmpresa: data.cardPurposeEmpresa,
         supplierArea: data.supplierArea,
         partnerArea: data.partnerArea,

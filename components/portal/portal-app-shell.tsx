@@ -118,7 +118,7 @@ export function PortalAppShell({
       )}
 
       <div className="flex-1 lg:pl-64 flex flex-col min-h-screen">
-        <PortalExpiryBanner expiresAt={expiresAt} />
+{/*         <PortalExpiryBanner expiresAt={expiresAt} /> */}
 
         <header className="lg:hidden sticky top-0 z-30 flex items-center gap-3 bg-white border-b border-border px-4 h-14 shadow-sm">
           <button

@@ -63,9 +63,7 @@ export function PortalAccessDenied() {
         </div>
         <h1 className="text-xl font-bold text-foreground">Acesso restrito</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Esta área só pode ser aberta a partir do portal empresarial{" "}
-          <strong className="text-foreground">portal.pumangol.co.ao</strong>.
-          Utilize o botão no portal para entrar.
+          Não tem permissão para acessar esta área.
         </p>
       </div>
     </div>

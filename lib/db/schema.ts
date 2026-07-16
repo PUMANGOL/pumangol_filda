@@ -68,15 +68,18 @@ export const leads = pgTable("mfilda_leads", {
   lubricantVehicleCountEmpresa: text("lubricant_vehicle_count_empresa"),
 
   // Empresa: Frota+
-  frotaVehicleCount: text("frota_vehicle_count"),
-  frotaInterest: text("frota_interest"), // uso_pessoal | gestao_frota
+  frotaVehicleCount: text("frota_vehicle_count"), // ligeiro: viaturas | pesado: litros/mês
+  frotaInterest: text("frota_interest"), // pesado | ligeiro
 
   // Empresa: Angobetumes
   angobetumesInterest: text("angobetumes_interest"),
   angobetumesActivity: text("angobetumes_activity"),
 
-  // Empresa: Aviação
+  // Empresa: Aviação (legado — já não recolhido no formulário)
   aviacaoOperationType: text("aviacao_operation_type"),
+
+  // Particular: Academia (tópicos de interesse)
+  academiaTopics: jsonb("academia_topics").$type<string[]>(),
 
   // Empresa: Cartão Presente
   cardPurposeEmpresa: text("card_purpose_empresa"),

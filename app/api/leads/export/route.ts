@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { leads } from "@/lib/db/schema";
 import { getSessionOrPortal } from "@/lib/auth/portal";
-import { PROFILE_LABELS, SOLUTION_LABELS, TIMELINE_LABELS } from "@/lib/utils";
+import { PROFILE_LABELS, SOLUTION_LABELS, TIMELINE_LABELS, ACADEMIA_TOPIC_LABELS } from "@/lib/utils";
 import ExcelJS from "exceljs";
 import { desc } from "drizzle-orm";
 
@@ -46,6 +46,7 @@ export async function GET(request: NextRequest) {
     { header: "Cargo", key: "jobTitle", width: 22 },
     { header: "Já cliente?", key: "isExistingClient", width: 12 },
     { header: "Soluções de Interesse", key: "solutions", width: 40 },
+    { header: "Academia de Formação", key: "academiaTopics", width: 36 },
     { header: "Timeline de Compra", key: "purchaseTimeline", width: 28 },
     { header: "Quer Contacto?", key: "wantsContact", width: 15 },
     { header: "Preferência Contacto", key: "contactPreference", width: 28 },
@@ -106,6 +107,9 @@ export async function GET(request: NextRequest) {
             : "",
       solutions: solutions
         .map((s) => SOLUTION_LABELS[s] ?? s)
+        .join(", "),
+      academiaTopics: ((lead.academiaTopics as string[]) ?? [])
+        .map((t) => ACADEMIA_TOPIC_LABELS[t] ?? t)
         .join(", "),
       purchaseTimeline: TIMELINE_LABELS[lead.purchaseTimeline] ?? lead.purchaseTimeline,
       wantsContact: lead.wantsContact ? "Sim" : "Não",

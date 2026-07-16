@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 import type { Lead } from "@/lib/db/schema";
 import { Badge } from "@/components/ui/primitives/badge";
 import { Button } from "@/components/ui/primitives/button";
-import { formatDate, PROFILE_LABELS, SOLUTION_LABELS, TIMELINE_LABELS } from "@/lib/utils";
+import { formatDate, PROFILE_LABELS, SOLUTION_LABELS, TIMELINE_LABELS, ACADEMIA_TOPIC_LABELS } from "@/lib/utils";
 
 const CLASSIFICATION_VARIANT: Record<string, "A+" | "A" | "B" | "C" | "D" | "FORNECEDOR"> = {
   "A+": "A+", A: "A", B: "B", C: "C", D: "D", FORNECEDOR: "FORNECEDOR",
@@ -112,6 +112,21 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
                 <span className="text-slate-400 text-xs">—</span>
               )}
             </div>
+            {((lead.academiaTopics as string[]) ?? []).length > 0 && (
+              <div className="mt-2">
+                <p className="text-xs text-slate-500 mb-1">Academia de Formação</p>
+                <div className="flex flex-wrap gap-1">
+                  {(lead.academiaTopics as string[]).map((t) => (
+                    <span
+                      key={t}
+                      className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs"
+                    >
+                      {ACADEMIA_TOPIC_LABELS[t] ?? t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </DetailSection>
 
           <DetailSection title="Qualificação">

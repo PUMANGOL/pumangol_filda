@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/primitives/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/primitives/card";
 import { CheckCircle2, ChevronRight, Loader2, User, Building2, Landmark, Handshake, Truck, HelpCircle } from "lucide-react";
-import { BETUMES_EMULSAO_LABEL, cn } from "@/lib/utils";
+import { BETUMES_EMULSAO_LABEL, ACADEMIA_TOPIC_LABELS, cn } from "@/lib/utils";
 import { createLead, type CreateLeadInput } from "@/app/leads/actions";
 import { COMPANY_SECTORS, JOB_TITLES } from "@/components/lead-form/lead-form-options";
 import { SearchableSelect } from "@/components/lead-form/searchable-select";
@@ -51,6 +51,7 @@ interface FormData {
   lubricantVehicleTypeParticular: string;
   usesViaApp: boolean | null;
   cardPurposeParticular: string;
+  academiaTopics: string[];
 
   // Empresa conditionals
   combustiveisPurpose: string;
@@ -60,7 +61,6 @@ interface FormData {
   frotaInterest: string;
   angobetumesInterest: string;
   angobetumesActivity: string;
-  aviacaoOperationType: string;
   cardPurposeEmpresa: string;
 
   // Fornecedor / Parceiro
@@ -83,9 +83,10 @@ const INITIAL: FormData = {
   isExistingClient: null, existingClientAreas: [], existingClientAreasOther: "",
   solutions: [],
   lubricantVehicleTypeParticular: "", usesViaApp: null, cardPurposeParticular: "",
+  academiaTopics: [],
   combustiveisPurpose: "", combustiveisConsumption: "",
   lubricantVehicleCountEmpresa: "", frotaVehicleCount: "", frotaInterest: "",
-  angobetumesInterest: "", angobetumesActivity: "", aviacaoOperationType: "", cardPurposeEmpresa: "",
+  angobetumesInterest: "", angobetumesActivity: "", cardPurposeEmpresa: "",
   supplierArea: "", partnerArea: "",
   purchaseTimeline: "", wantsContact: null, contactPreference: [],
   gdprConsent: false,
@@ -95,7 +96,6 @@ const EXISTING_CLIENT_AREAS = [
   { value: "combustiveis", label: "Combustíveis" },
   { value: "lubrificantes", label: "Lubrificantes" },
   { value: "gas", label: "Gás" },
-  { value: "aviacao", label: "Aviação" },
   { value: "cartoes_frota", label: "Cartões de Frota" },
   { value: "loja_conveniencia", label: "Loja de Conveniência" },
   { value: "servicos_maritimos", label: "Serviços Marítimos" },
@@ -107,7 +107,7 @@ const PARTICULAR_SOLUTIONS = [
   { value: "lubrificantes", label: "Lubrificantes" },
   { value: "via", label: "VIA" },
   { value: "cartao_presente", label: "Cartão Presente" },
-  { value: "frota_mais", label: "Serviço Frota+" },
+  { value: "academia", label: "Academia de Formação" },
   { value: "patrocinios", label: "Patrocínios" },
   { value: "outros", label: "Outros" },
 ];
@@ -118,10 +118,13 @@ const EMPRESA_SOLUTIONS = [
   { value: "frota_mais", label: "Frota+" },
   { value: "cartao_presente", label: "Cartão Presente" },
   { value: "angobetumes", label: BETUMES_EMULSAO_LABEL },
-  { value: "aviacao", label: "Aviação" },
   { value: "patrocinios", label: "Patrocínios" },
   { value: "outros", label: "Outros" },
 ];
+
+const ACADEMIA_TOPICS = Object.entries(ACADEMIA_TOPIC_LABELS).map(
+  ([value, label]) => ({ value, label })
+);
 
 const PROVINCES = [
   "Bengo", "Benguela", "Bié", "Cabinda", "Cuando Cubango",
@@ -339,10 +342,15 @@ export function LeadForm({ submittedBy }: { submittedBy?: string }) {
         combustiveisConsumption: data.combustiveisConsumption || undefined,
         lubricantVehicleCountEmpresa: data.lubricantVehicleCountEmpresa || undefined,
         frotaVehicleCount: data.frotaVehicleCount || undefined,
-        frotaInterest: data.frotaInterest || undefined,
+        frotaInterest: data.solutions.includes("frota_mais")
+          ? data.frotaInterest || undefined
+          : undefined,
         angobetumesInterest: data.angobetumesInterest || undefined,
         angobetumesActivity: data.angobetumesActivity || undefined,
-        aviacaoOperationType: data.aviacaoOperationType || undefined,
+        academiaTopics:
+          data.solutions.includes("academia") && data.academiaTopics.length > 0
+            ? data.academiaTopics
+            : undefined,
         cardPurposeEmpresa: data.cardPurposeEmpresa || undefined,
         supplierArea: data.supplierArea || undefined,
         partnerArea: data.partnerArea || undefined,
@@ -527,7 +535,7 @@ export function LeadForm({ submittedBy }: { submittedBy?: string }) {
                   <button
                     key={value}
                     type="button"
-                    onClick={() => { set("profile", value as Profile); setData(prev => ({ ...prev, solutions: [], isExistingClient: null })); }}
+                    onClick={() => { set("profile", value as Profile); setData(prev => ({ ...prev, solutions: [], academiaTopics: [], isExistingClient: null })); }}
                     className={cn(
                       "flex items-start gap-3 p-3.5 rounded-xl border-2 text-left transition-all cursor-pointer",
                       data.profile === value
@@ -603,7 +611,7 @@ export function LeadForm({ submittedBy }: { submittedBy?: string }) {
 
                 {data.isExistingClient === true && (
                   <div>
-                    <Label className="mb-2 block">Em que ramo de negócio mantém relação comercial?</Label>
+                    <Label className="mb-2 block">Em que ramo de negócio mantém relação comercial com a Pumangol?</Label>
                     <div className="grid sm:grid-cols-2 gap-2">
                       {EXISTING_CLIENT_AREAS.map(({ value, label }) => (
                         <CheckboxOption
@@ -645,7 +653,12 @@ export function LeadForm({ submittedBy }: { submittedBy?: string }) {
                       <button
                         key={value}
                         type="button"
-                        onClick={() => toggleArray("solutions", value, !selected)}
+                        onClick={() => {
+                          toggleArray("solutions", value, !selected);
+                          if (value === "academia" && selected) {
+                            set("academiaTopics", []);
+                          }
+                        }}
                         className={cn(
                           "flex items-center gap-2.5 px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all text-left",
                           selected
@@ -703,6 +716,28 @@ export function LeadForm({ submittedBy }: { submittedBy?: string }) {
                       </div>
                     )}
 
+                    {isParticular && data.solutions.includes("academia") && (
+                      <div>
+                        <SectionTitle>Academia de Formação — Áreas de interesse</SectionTitle>
+                        <div className="grid sm:grid-cols-2 gap-2">
+                          {ACADEMIA_TOPICS.map(({ value, label }) => (
+                            <label
+                              key={value}
+                              className="flex items-center gap-2 rounded-lg border border-border px-3 py-2.5 cursor-pointer hover:bg-muted/50"
+                            >
+                              <Checkbox
+                                checked={data.academiaTopics.includes(value)}
+                                onCheckedChange={(checked) =>
+                                  toggleArray("academiaTopics", value, checked === true)
+                                }
+                              />
+                              <span className="text-sm text-slate-700">{label}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     {isEmpresa && data.solutions.includes("combustiveis") && (
                       <div className="space-y-3">
                         <SectionTitle>Combustíveis</SectionTitle>
@@ -749,25 +784,56 @@ export function LeadForm({ submittedBy }: { submittedBy?: string }) {
                       <div className="space-y-3">
                         <SectionTitle>Frota+</SectionTitle>
                         <div>
-                          <Label className="mb-2 block text-sm">Quantidade aproximada de viaturas:</Label>
-                          <Select value={data.frotaVehicleCount} onValueChange={v => set("frotaVehicleCount", v)}>
-                            <SelectTrigger><SelectValue placeholder="Seleccione..." /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="1_5">1–5</SelectItem>
-                              <SelectItem value="6_20">6–20</SelectItem>
-                              <SelectItem value="21_50">21–50</SelectItem>
-                              <SelectItem value="mais_50">Mais de 50</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label className="mb-2 block text-sm">Interesse:</Label>
+                          <Label className="mb-2 block text-sm">Tipo de frota:</Label>
                           <div className="grid grid-cols-2 gap-2">
-                            {[["uso_pessoal", "Uso pessoal"], ["gestao_frota", "Gestão de frota"]].map(([v, l]) => (
-                              <RadioOption key={v} name="frotaInterest" value={v!} label={l!} currentValue={data.frotaInterest} onChange={v => set("frotaInterest", v)} />
+                            {([["ligeiro", "Ligeiro"], ["pesado", "Pesado"]] as const).map(([v, l]) => (
+                              <RadioOption
+                                key={v}
+                                name="frotaTipo"
+                                value={v}
+                                label={l}
+                                currentValue={data.frotaInterest}
+                                onChange={(next) => {
+                                  setData((prev) => ({
+                                    ...prev,
+                                    frotaInterest: next,
+                                    frotaVehicleCount: "",
+                                  }));
+                                }}
+                              />
                             ))}
                           </div>
                         </div>
+                        {data.frotaInterest === "ligeiro" && (
+                          <div>
+                            <Label className="mb-2 block text-sm">Quantidade aproximada de viaturas:</Label>
+                            <Select value={data.frotaVehicleCount} onValueChange={(v) => set("frotaVehicleCount", v)}>
+                              <SelectTrigger><SelectValue placeholder="Seleccione..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="1_5">1–5</SelectItem>
+                                <SelectItem value="6_20">6–20</SelectItem>
+                                <SelectItem value="21_50">21–50</SelectItem>
+                                <SelectItem value="mais_50">Mais de 50</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+                        {data.frotaInterest === "pesado" && (
+                          <div>
+                            <Label className="mb-2 block text-sm">Quantidade aproximada de litros/mês:</Label>
+                            <Select value={data.frotaVehicleCount} onValueChange={(v) => set("frotaVehicleCount", v)}>
+                              <SelectTrigger><SelectValue placeholder="Seleccione..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="ate_1000">Até 1.000 L</SelectItem>
+                                <SelectItem value="5000">5.000 L</SelectItem>
+                                <SelectItem value="5001_10000">5.001 – 10.000 L</SelectItem>
+                                <SelectItem value="10001_25000">10.001 – 25.000 L</SelectItem>
+                                <SelectItem value="25001_50000">25.001 – 50.000 L</SelectItem>
+                                <SelectItem value="mais_50000">Mais de 50.000 L</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -777,7 +843,7 @@ export function LeadForm({ submittedBy }: { submittedBy?: string }) {
                         <div>
                           <Label className="mb-2 block text-sm">Interesse:</Label>
                           <div className="grid sm:grid-cols-2 gap-2">
-                            {[["projeto_proprio", "Projeto próprio"], ["construcao", "Construção"], ["revenda", "Revenda"], ["parceria", "Parceria"]].map(([v, l]) => (
+                            {[["projeto_proprio", "Projeto próprio"], ["parceria", "Parceria"]].map(([v, l]) => (
                               <RadioOption key={v} name="angobetInt" value={v!} label={l!} currentValue={data.angobetumesInterest} onChange={v => set("angobetumesInterest", v)} />
                             ))}
                           </div>
@@ -791,22 +857,9 @@ export function LeadForm({ submittedBy }: { submittedBy?: string }) {
                               <SelectItem value="obras_publicas">Obras Públicas</SelectItem>
                               <SelectItem value="infra_rodoviarias">Infra-estruturas Rodoviárias</SelectItem>
                               <SelectItem value="industria">Indústria</SelectItem>
-                              <SelectItem value="distribuidor_materiais">Distribuidor de Materiais</SelectItem>
                               <SelectItem value="outro">Outro</SelectItem>
                             </SelectContent>
                           </Select>
-                        </div>
-                      </div>
-                    )}
-
-                    {isEmpresa && data.solutions.includes("aviacao") && (
-                      <div>
-                        <SectionTitle>Aviação</SectionTitle>
-                        <Label className="mb-2 block text-sm">Tipo de operação:</Label>
-                        <div className="grid sm:grid-cols-2 gap-2">
-                          {[["companhia_aerea", "Companhia aérea"], ["operador_privado", "Operador privado"], ["governo", "Governo"], ["aeroporto", "Aeroporto"], ["outro", "Outro"]].map(([v, l]) => (
-                            <RadioOption key={v} name="aviacaoOp" value={v!} label={l!} currentValue={data.aviacaoOperationType} onChange={v => set("aviacaoOperationType", v)} />
-                          ))}
                         </div>
                       </div>
                     )}
@@ -951,13 +1004,19 @@ export function LeadForm({ submittedBy }: { submittedBy?: string }) {
                 <Checkbox
                   id="gdpr"
                   checked={data.gdprConsent}
-                  onCheckedChange={c => set("gdprConsent", Boolean(c))}
+                  onCheckedChange={(c) => set("gdprConsent", Boolean(c))}
                 />
                 <label htmlFor="gdpr" className="text-sm text-slate-600 leading-relaxed cursor-pointer">
-                  Autorizo a Pumangol a tratar os meus dados pessoais para efeitos de contacto comercial, envio de informação sobre produtos, serviços e campanhas, nos termos da legislação aplicável.
+                  Autorizo expressa e inequivocamente a Pumangol a tratar os meus
+                  dados acima fornecidos, para efeitos de contacto comercial,
+                  envio de informação/publicidade sobre produtos, serviços e
+                  campanhas, nos termos da Lei de Protecção de Dados e demais
+                  legislação aplicável.
                 </label>
               </div>
-              {errors.gdprConsent && <p className="text-xs text-red-500 mt-2">{errors.gdprConsent}</p>}
+              {errors.gdprConsent && (
+                <p className="text-xs text-red-500 mt-2">{errors.gdprConsent}</p>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -979,7 +1038,11 @@ export function LeadForm({ submittedBy }: { submittedBy?: string }) {
             <ChevronRight className="h-4 w-4" />
           </Button>
         ) : (
-          <Button onClick={handleSubmit} disabled={submitting} size="lg">
+          <Button
+            onClick={handleSubmit}
+            disabled={submitting || !data.gdprConsent}
+            size="lg"
+          >
             {submitting ? (
               <><Loader2 className="h-4 w-4 animate-spin" /> A submeter...</>
             ) : (
