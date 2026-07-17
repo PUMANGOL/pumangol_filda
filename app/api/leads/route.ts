@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { leads } from "@/lib/db/schema";
-import { eq, desc, like, or, and, sql } from "drizzle-orm";
+import { eq, desc, like, or, and, sql, gte, lte } from "drizzle-orm";
 import { getSessionOrPortal } from "@/lib/auth/portal";
 import { calculateScore } from "@/lib/scoring";
 import { z } from "zod";
@@ -170,6 +170,10 @@ export async function GET(request: NextRequest) {
     const profile = searchParams.get("profile");
     const classification = searchParams.get("classification");
     const search = searchParams.get("search");
+    const dateFrom = searchParams.get("dateFrom");
+    const dateTo = searchParams.get("dateTo");
+    const submittedBy = searchParams.get("submittedBy");
+    const solution = searchParams.get("solution");
     const offset = (page - 1) * limit;
 
     const conditions = [];
@@ -179,6 +183,23 @@ export async function GET(request: NextRequest) {
     }
     if (classification) {
       conditions.push(eq(leads.classification, classification));
+    }
+    if (dateFrom) {
+      conditions.push(gte(leads.createdAt, new Date(`${dateFrom}T00:00:00`)));
+    }
+    if (dateTo) {
+      conditions.push(lte(leads.createdAt, new Date(`${dateTo}T23:59:59.999`)));
+    }
+    if (submittedBy) {
+      conditions.push(
+        or(
+          eq(leads.submittedByFullName, submittedBy),
+          eq(leads.submittedByUsername, submittedBy)
+        )
+      );
+    }
+    if (solution) {
+      conditions.push(sql`${leads.solutions} ? ${solution}`);
     }
     if (search) {
       conditions.push(

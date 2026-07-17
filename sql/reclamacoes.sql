@@ -4,6 +4,10 @@
 CREATE TABLE IF NOT EXISTS mfilda_reclamacoes (
   id SERIAL PRIMARY KEY,
 
+  nome TEXT NOT NULL,
+  telefone TEXT,
+  email TEXT,
+
   category TEXT NOT NULL
     CHECK (category IN ('VIA', 'Frota+', 'Atendimento ao cliente')),
 
@@ -23,3 +27,6 @@ CREATE INDEX IF NOT EXISTS idx_mfilda_reclamacoes_category
 
 CREATE INDEX IF NOT EXISTS idx_mfilda_reclamacoes_created_at
   ON mfilda_reclamacoes (created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_mfilda_reclamacoes_email
+  ON mfilda_reclamacoes (email);

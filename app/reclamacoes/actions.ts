@@ -13,6 +13,15 @@ import { isHtmlEffectivelyEmpty } from "@/lib/html";
 
 const createSchema = z
   .object({
+    nome: z.string().min(2, "Nome inválido."),
+    telefone: z.string().optional(),
+    email: z
+      .string()
+      .optional()
+      .refine(
+        (v) => !v?.trim() || z.string().email().safeParse(v.trim()).success,
+        "E-mail inválido."
+      ),
     category: z.enum(RECLAMACAO_CATEGORIES),
     description: z.string().min(1),
     postoNome: z.string().optional(),
@@ -64,6 +73,9 @@ export async function createReclamacao(
     const [row] = await db
       .insert(reclamacoes)
       .values({
+        nome: parsed.data.nome.trim(),
+        telefone: parsed.data.telefone?.trim() || null,
+        email: parsed.data.email?.trim() || null,
         category: parsed.data.category,
         postoNome,
         description: parsed.data.description.trim(),

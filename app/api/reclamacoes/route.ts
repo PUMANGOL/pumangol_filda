@@ -27,7 +27,10 @@ export async function GET(request: NextRequest) {
       conditions.push(
         or(
           like(reclamacoes.description, `%${search}%`),
-          like(reclamacoes.category, `%${search}%`)
+          like(reclamacoes.category, `%${search}%`),
+          like(reclamacoes.nome, `%${search}%`),
+          like(reclamacoes.telefone, `%${search}%`),
+          like(reclamacoes.email, `%${search}%`)
         )
       );
     }

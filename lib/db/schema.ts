@@ -127,6 +127,9 @@ export type NewLead = typeof leads.$inferInsert;
 
 export const reclamacoes = pgTable("mfilda_reclamacoes", {
   id: serial("id").primaryKey(),
+  nome: text("nome").notNull(),
+  telefone: text("telefone"),
+  email: text("email"),
   category: text("category").notNull(),
   postoNome: text("posto_nome"),
   description: text("description").notNull(),

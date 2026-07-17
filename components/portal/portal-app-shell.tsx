@@ -3,17 +3,27 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, PlusCircle, Menu, X, Mail } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  PlusCircle,
+  Menu,
+  X,
+  Mail,
+  MessageSquareWarning,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import {
-  PortalExpiryBanner,
-  PortalExpiredScreen,
-} from "@/components/portal/portal-access-ui";
+import { PortalExpiredScreen } from "@/components/portal/portal-access-ui";
 
 const navItems = [
   { href: "/my-pumangol", label: "Dashboard", icon: LayoutDashboard },
   { href: "/my-pumangol/leads", label: "Leads", icon: Users },
+  {
+    href: "/my-pumangol/reclamacoes",
+    label: "Reclamações",
+    icon: MessageSquareWarning,
+  },
   { href: "/my-pumangol/leads/new", label: "Nova Lead", icon: PlusCircle },
 ];
 
@@ -72,10 +82,11 @@ export function PortalAppShell({
             const active =
               href === "/my-pumangol/leads/new"
                 ? pathname === href
-                : pathname === href ||
-                  (href !== "/my-pumangol" &&
-                    pathname.startsWith(href) &&
-                    pathname !== "/my-pumangol/leads/new");
+                : href === "/my-pumangol/leads"
+                  ? pathname === href ||
+                    (pathname.startsWith(`${href}/`) &&
+                      pathname !== "/my-pumangol/leads/new")
+                  : pathname === href || pathname.startsWith(`${href}/`);
             return (
               <Link
                 key={href}

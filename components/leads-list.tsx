@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/primitives/button";
-import { Input } from "@/components/ui/primitives/input";
 import { Badge } from "@/components/ui/primitives/badge";
 import {
   Select,
@@ -20,6 +19,7 @@ import {
   PlusCircle,
   Loader2,
   RefreshCw,
+  BrushCleaning,
 } from "lucide-react";
 import type { Lead } from "@/lib/db/schema";
 import { formatDate, PROFILE_LABELS, SOLUTION_LABELS } from "@/lib/utils";
@@ -30,6 +30,11 @@ const CLASSIFICATION_VARIANT: Record<string, "A+" | "A" | "B" | "C" | "D" | "FOR
   "A+": "A+", A: "A", B: "B", C: "C", D: "D", FORNECEDOR: "FORNECEDOR",
 };
 
+const SOLUTION_OPTIONS = Object.entries(SOLUTION_LABELS);
+
+const dateInputClassName =
+  "h-10 rounded-xl border border-input bg-white px-3 text-sm outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring/20";
+
 export function LeadsList() {
   const basePath = useAppBasePath();
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -39,11 +44,25 @@ export function LeadsList() {
   const [search, setSearch] = useState("");
   const [filterProfile, setFilterProfile] = useState("all");
   const [filterClass, setFilterClass] = useState("all");
+  const [filterDateFrom, setFilterDateFrom] = useState("");
+  const [filterDateTo, setFilterDateTo] = useState("");
+  const [filterSubmittedBy, setFilterSubmittedBy] = useState("all");
+  const [filterSolution, setFilterSolution] = useState("all");
+  const [registrants, setRegistrants] = useState<string[]>([]);
   const [searchInput, setSearchInput] = useState("");
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [exporting, setExporting] = useState(false);
 
   const limit = 20;
+
+  useEffect(() => {
+    fetch("/api/leads/registrants")
+      .then((res) => res.json())
+      .then((data: { registrants?: string[] }) => {
+        setRegistrants(data.registrants ?? []);
+      })
+      .catch(() => setRegistrants([]));
+  }, []);
 
   const fetchLeads = useCallback(async () => {
     setLoading(true);
@@ -55,6 +74,10 @@ export function LeadsList() {
       if (search) params.set("search", search);
       if (filterProfile !== "all") params.set("profile", filterProfile);
       if (filterClass !== "all") params.set("classification", filterClass);
+      if (filterDateFrom) params.set("dateFrom", filterDateFrom);
+      if (filterDateTo) params.set("dateTo", filterDateTo);
+      if (filterSubmittedBy !== "all") params.set("submittedBy", filterSubmittedBy);
+      if (filterSolution !== "all") params.set("solution", filterSolution);
 
       const res = await fetch(`/api/leads?${params}`);
       const data = await res.json();
@@ -63,7 +86,16 @@ export function LeadsList() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, filterProfile, filterClass]);
+  }, [
+    page,
+    search,
+    filterProfile,
+    filterClass,
+    filterDateFrom,
+    filterDateTo,
+    filterSubmittedBy,
+    filterSolution,
+  ]);
 
   useEffect(() => {
     fetchLeads();
@@ -72,6 +104,28 @@ export function LeadsList() {
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     setSearch(searchInput);
+    setPage(1);
+  }
+
+  const hasActiveFilters =
+    Boolean(search) ||
+    Boolean(searchInput) ||
+    filterProfile !== "all" ||
+    filterClass !== "all" ||
+    Boolean(filterDateFrom) ||
+    Boolean(filterDateTo) ||
+    filterSubmittedBy !== "all" ||
+    filterSolution !== "all";
+
+  function clearFilters() {
+    setSearch("");
+    setSearchInput("");
+    setFilterProfile("all");
+    setFilterClass("all");
+    setFilterDateFrom("");
+    setFilterDateTo("");
+    setFilterSubmittedBy("all");
+    setFilterSolution("all");
     setPage(1);
   }
 
@@ -95,26 +149,55 @@ export function LeadsList() {
 
   return (
     <div className="space-y-4">
-      {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <form onSubmit={handleSearch} className="flex gap-2 flex-1">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Pesquisar por nome, e-mail, telefone..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full h-10 pl-9 pr-3 rounded-xl border border-input bg-white text-sm outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring/20"
-            />
-          </div>
-          <Button type="submit" variant="secondary" size="icon">
-            <Search className="h-4 w-4" />
-          </Button>
-        </form>
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <form onSubmit={handleSearch} className="flex gap-2 flex-1">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Pesquisar por nome, e-mail, telefone..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="w-full h-10 pl-9 pr-3 rounded-xl border border-input bg-white text-sm outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring/20"
+              />
+            </div>
+            <Button type="submit" variant="secondary" size="icon">
+              <Search className="h-4 w-4" />
+            </Button>
+          </form>
 
-        <div className="flex gap-2">
-          <Select value={filterProfile} onValueChange={(v) => { setFilterProfile(v); setPage(1); }}>
+          <div className="flex gap-2 shrink-0">
+            <Button variant="outline" size="icon" onClick={fetchLeads} title="Actualizar">
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+
+            <Button variant="outline" onClick={handleExport} disabled={exporting}>
+              {exporting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4" />
+              )}
+              <span className="hidden sm:inline">Exportar</span>
+            </Button>
+
+            <Link href={appPath(basePath, "/leads/new")}>
+              <Button>
+                <PlusCircle className="h-4 w-4" />
+                <span className="hidden sm:inline">Nova Lead</span>
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <Select
+            value={filterProfile}
+            onValueChange={(v) => {
+              setFilterProfile(v);
+              setPage(1);
+            }}
+          >
             <SelectTrigger className="w-[160px]">
               <SelectValue placeholder="Perfil" />
             </SelectTrigger>
@@ -129,7 +212,13 @@ export function LeadsList() {
             </SelectContent>
           </Select>
 
-          <Select value={filterClass} onValueChange={(v) => { setFilterClass(v); setPage(1); }}>
+          <Select
+            value={filterClass}
+            onValueChange={(v) => {
+              setFilterClass(v);
+              setPage(1);
+            }}
+          >
             <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Classificação" />
             </SelectTrigger>
@@ -144,34 +233,95 @@ export function LeadsList() {
             </SelectContent>
           </Select>
 
-          <Button variant="outline" size="icon" onClick={fetchLeads} title="Actualizar">
-            <RefreshCw className="h-4 w-4" />
-          </Button>
+          <Select
+            value={filterSolution}
+            onValueChange={(v) => {
+              setFilterSolution(v);
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Solução" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas as soluções</SelectItem>
+              {SOLUTION_OPTIONS.map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-          <Button variant="outline" onClick={handleExport} disabled={exporting}>
-            {exporting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Download className="h-4 w-4" />
-            )}
-            <span className="hidden sm:inline">Exportar</span>
-          </Button>
+          <Select
+            value={filterSubmittedBy}
+            onValueChange={(v) => {
+              setFilterSubmittedBy(v);
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Registado por" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os registadores</SelectItem>
+              {registrants.map((name) => (
+                <SelectItem key={name} value={name}>
+                  {name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-          <Link href={appPath(basePath, "/leads/new")}>
-            <Button>
-              <PlusCircle className="h-4 w-4" />
-              <span className="hidden sm:inline">Nova Lead</span>
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-slate-500 whitespace-nowrap" htmlFor="leads-date-from">
+              De
+            </label>
+            <input
+              id="leads-date-from"
+              type="date"
+              value={filterDateFrom}
+              max={filterDateTo || undefined}
+              onChange={(e) => {
+                setFilterDateFrom(e.target.value);
+                setPage(1);
+              }}
+              className={dateInputClassName}
+            />
+            <label className="text-xs text-slate-500 whitespace-nowrap" htmlFor="leads-date-to">
+              Até
+            </label>
+            <input
+              id="leads-date-to"
+              type="date"
+              value={filterDateTo}
+              min={filterDateFrom || undefined}
+              onChange={(e) => {
+                setFilterDateTo(e.target.value);
+                setPage(1);
+              }}
+              className={dateInputClassName}
+            />
+          </div>
+
+          {hasActiveFilters && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={clearFilters}
+              title="Limpar filtros"
+              aria-label="Limpar filtros"
+            >
+              <BrushCleaning className="h-4 w-4" />
             </Button>
-          </Link>
+          )}
         </div>
       </div>
 
-      {/* Stats bar */}
       <div className="text-sm text-slate-500">
         {loading ? "A carregar..." : `${total} lead${total !== 1 ? "s" : ""} encontrada${total !== 1 ? "s" : ""}`}
       </div>
 
-      {/* Table */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-20">
@@ -258,7 +408,6 @@ export function LeadsList() {
         <LeadDetailModal lead={selectedLead} onClose={() => setSelectedLead(null)} />
       )}
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-slate-500">

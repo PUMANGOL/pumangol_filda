@@ -73,7 +73,7 @@ export function ReclamacoesTable() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <input
               type="text"
-              placeholder="Pesquisar por categoria ou descrição..."
+              placeholder="Pesquisar por nome, telefone, e-mail..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="w-full h-10 pl-9 pr-3 rounded-xl border border-input bg-white text-sm outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring/20"
@@ -135,6 +135,12 @@ export function ReclamacoesTable() {
                     #
                   </th>
                   <th className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap">
+                    Nome
+                  </th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap hidden md:table-cell">
+                    Telefone / E-mail
+                  </th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap">
                     Categoria
                   </th>
                   <th className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap hidden sm:table-cell">
@@ -143,10 +149,10 @@ export function ReclamacoesTable() {
                   <th className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap">
                     Descrição
                   </th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap hidden md:table-cell">
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap hidden lg:table-cell">
                     Data
                   </th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap hidden lg:table-cell">
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap hidden xl:table-cell">
                     Registado por
                   </th>
                 </tr>
@@ -164,23 +170,28 @@ export function ReclamacoesTable() {
                         {(page - 1) * limit + index + 1}
                       </td>
                       <td className="px-4 py-3">
+                        <div className="font-medium text-slate-800">{row.nome}</div>
+                      </td>
+                      <td className="px-4 py-3 hidden md:table-cell">
+                        <div className="text-slate-700 text-xs">{row.telefone}</div>
+                        <div className="text-slate-400 text-xs">{row.email}</div>
+                      </td>
+                      <td className="px-4 py-3">
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-medium">
                           {row.category}
                         </span>
                       </td>
                       <td className="px-4 py-3 hidden sm:table-cell text-slate-700 text-xs max-w-[12rem] truncate">
-                        {row.postoNome ?? "—"}
+                        {row.postoNome}
                       </td>
                       <td className="px-4 py-3 max-w-md">
                         <p className="text-slate-800 line-clamp-2">{preview}</p>
                       </td>
-                      <td className="px-4 py-3 hidden md:table-cell text-slate-500 text-xs whitespace-nowrap">
+                      <td className="px-4 py-3 hidden lg:table-cell text-slate-500 text-xs whitespace-nowrap">
                         {formatDate(row.createdAt)}
                       </td>
-                      <td className="px-4 py-3 hidden lg:table-cell text-slate-500 text-xs">
-                        {row.submittedByFullName ??
-                          row.submittedByUsername ??
-                          "—"}
+                      <td className="px-4 py-3 hidden xl:table-cell text-slate-500 text-xs">
+                        {row.submittedByFullName ?? row.submittedByUsername}
                       </td>
                     </tr>
                   );

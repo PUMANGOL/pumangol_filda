@@ -38,6 +38,9 @@ export async function GET() {
   ws.columns = [
     { header: "#", key: "ordem", width: 8 },
     { header: "Data/Hora", key: "createdAt", width: 20 },
+    { header: "Nome", key: "nome", width: 28 },
+    { header: "Telefone", key: "telefone", width: 16 },
+    { header: "E-mail", key: "email", width: 30 },
     { header: "Categoria", key: "category", width: 24 },
     { header: "Posto", key: "postoNome", width: 28 },
     { header: "Descrição", key: "description", width: 48 },
@@ -61,6 +64,9 @@ export async function GET() {
     const excelRow = ws.addRow({
       ordem: i + 1,
       createdAt: new Date(row.createdAt).toLocaleString("pt-PT"),
+      nome: row.nome,
+      telefone: row.telefone ?? "",
+      email: row.email ?? "",
       category: row.category,
       postoNome: row.postoNome ?? "",
       description: htmlToPlainText(row.description),

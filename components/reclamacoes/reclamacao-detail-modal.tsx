@@ -39,10 +39,10 @@ export function ReclamacaoDetailModal({
         <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-slate-100 bg-white px-6 py-4">
           <div>
             <h2 id="reclamacao-detail-title" className="text-lg font-bold text-slate-900">
-              {reclamacao.category}
+              {reclamacao.nome}
             </h2>
             <p className="text-sm text-slate-500 mt-0.5">
-              #{reclamacao.id} · {formatDate(reclamacao.createdAt)}
+              {reclamacao.category} · #{reclamacao.id} · {formatDate(reclamacao.createdAt)}
             </p>
           </div>
           <Button variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
@@ -51,6 +51,11 @@ export function ReclamacaoDetailModal({
         </div>
 
         <div className="px-6 py-5 space-y-4 text-sm">
+          <div>
+            <p className="font-semibold text-slate-600 mb-1">Contacto</p>
+            <p className="text-slate-700">{reclamacao.telefone || "—"}</p>
+            <p className="text-slate-700">{reclamacao.email || "—"}</p>
+          </div>
           {reclamacao.postoNome && (
             <div>
               <p className="font-semibold text-slate-600 mb-1">Posto</p>

@@ -10,6 +10,7 @@ import {
 } from "@/lib/reclamacoes/constants";
 import { createReclamacao } from "@/app/reclamacoes/actions";
 import { Button } from "@/components/ui/primitives/button";
+import { Input } from "@/components/ui/primitives/input";
 import { Label } from "@/components/ui/primitives/label";
 import {
   Select,
@@ -33,6 +34,9 @@ export function AddReclamacaoModal({
   onCreated,
 }: AddReclamacaoModalProps) {
   const [category, setCategory] = useState<ReclamacaoCategory | "">("");
+  const [nome, setNome] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [email, setEmail] = useState("");
   const [postoNome, setPostoNome] = useState("");
   const [postos, setPostos] = useState<string[]>([]);
   const [postosLoading, setPostosLoading] = useState(false);
@@ -56,6 +60,9 @@ export function AddReclamacaoModal({
   useEffect(() => {
     if (open) {
       setCategory("");
+      setNome("");
+      setTelefone("");
+      setEmail("");
       setPostoNome("");
       setPostos([]);
       setDescription("");
@@ -99,6 +106,10 @@ export function AddReclamacaoModal({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!nome.trim()) {
+      toast.error("Indique o nome.");
+      return;
+    }
     if (!category) {
       toast.error("Seleccione a categoria.");
       return;
@@ -110,6 +121,9 @@ export function AddReclamacaoModal({
 
     startTransition(async () => {
       const result = await createReclamacao({
+        nome,
+        telefone,
+        email,
         category,
         description,
         postoNome: needsPosto ? postoNome : undefined,
@@ -154,6 +168,45 @@ export function AddReclamacaoModal({
         </div>
 
         <form onSubmit={handleSubmit} className="px-6 py-5 space-y-5">
+          <div className="space-y-2">
+            <Label htmlFor="reclamacao-nome">Nome</Label>
+            <Input
+              id="reclamacao-nome"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              placeholder="Nome completo"
+              className="h-10"
+              disabled={pending}
+            />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="reclamacao-telefone">Telefone</Label>
+              <Input
+                id="reclamacao-telefone"
+                type="tel"
+                value={telefone}
+                onChange={(e) => setTelefone(e.target.value)}
+                placeholder="Telefone"
+                className="h-10"
+                disabled={pending}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="reclamacao-email">E-mail</Label>
+              <Input
+                id="reclamacao-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="E-mail"
+                className="h-10"
+                disabled={pending}
+              />
+            </div>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="reclamacao-categoria">Categoria</Label>
             <Select
