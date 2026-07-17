@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Users, PlusCircle, Menu, X } from "lucide-react";
+import { LayoutDashboard, Users, PlusCircle, Menu, X, MessageSquareWarning } from "lucide-react";
 import { useState } from "react";
 import type { User } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,7 @@ import { SidebarUserMenu } from "@/components/account/sidebar-user-menu";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/leads", label: "Leads", icon: Users },
+  { href: "/reclamacoes", label: "Reclamações", icon: MessageSquareWarning },
   { href: "/leads/new", label: "Nova Lead", icon: PlusCircle },
 ];
 
@@ -59,7 +60,9 @@ export function AppShell({
             const active =
               href === "/leads/new"
                 ? pathname === "/leads/new"
-                : pathname === href || (href !== "/dashboard" && pathname.startsWith(href) && pathname !== "/leads/new");
+                : href === "/leads"
+                  ? pathname === "/leads" || (pathname.startsWith("/leads/") && pathname !== "/leads/new")
+                  : pathname === href || pathname.startsWith(`${href}/`);
             return (
               <Link
                 key={href}

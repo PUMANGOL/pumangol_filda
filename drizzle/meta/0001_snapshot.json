@@ -1,0 +1,500 @@
+{
+  "id": "80b615d8-6887-451b-b4ae-002f34330eb4",
+  "prevId": "40f6a3dd-fda9-481f-b74d-c30c952a70e7",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.mfilda_leads": {
+      "name": "mfilda_leads",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "full_name": {
+          "name": "full_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phone": {
+          "name": "phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "province": {
+          "name": "province",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "municipality": {
+          "name": "municipality",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "profile": {
+          "name": "profile",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "company_name": {
+          "name": "company_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sector": {
+          "name": "sector",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "job_title": {
+          "name": "job_title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_existing_client": {
+          "name": "is_existing_client",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "existing_client_areas": {
+          "name": "existing_client_areas",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "solutions": {
+          "name": "solutions",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "lubricant_vehicle_type_particular": {
+          "name": "lubricant_vehicle_type_particular",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "uses_via_app": {
+          "name": "uses_via_app",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "card_purpose_particular": {
+          "name": "card_purpose_particular",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "combustiveis_purpose": {
+          "name": "combustiveis_purpose",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "combustiveis_consumption": {
+          "name": "combustiveis_consumption",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lubricant_vehicle_count_empresa": {
+          "name": "lubricant_vehicle_count_empresa",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "frota_vehicle_count": {
+          "name": "frota_vehicle_count",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "frota_interest": {
+          "name": "frota_interest",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "angobetumes_interest": {
+          "name": "angobetumes_interest",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "angobetumes_activity": {
+          "name": "angobetumes_activity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aviacao_operation_type": {
+          "name": "aviacao_operation_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "academia_topics": {
+          "name": "academia_topics",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "card_purpose_empresa": {
+          "name": "card_purpose_empresa",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "supplier_area": {
+          "name": "supplier_area",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "partner_area": {
+          "name": "partner_area",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "purchase_timeline": {
+          "name": "purchase_timeline",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "wants_contact": {
+          "name": "wants_contact",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "contact_preference": {
+          "name": "contact_preference",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gdpr_consent": {
+          "name": "gdpr_consent",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "score_profile": {
+          "name": "score_profile",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "score_interest": {
+          "name": "score_interest",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "score_potential": {
+          "name": "score_potential",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "score_timeline": {
+          "name": "score_timeline",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "score_contact": {
+          "name": "score_contact",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "total_score": {
+          "name": "total_score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "classification": {
+          "name": "classification",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'D'"
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "submitted_by_user_id": {
+          "name": "submitted_by_user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "submitted_by_username": {
+          "name": "submitted_by_username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "submitted_by_full_name": {
+          "name": "submitted_by_full_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "mfilda_leads_submitted_by_user_id_mfilda_users_id_fk": {
+          "name": "mfilda_leads_submitted_by_user_id_mfilda_users_id_fk",
+          "tableFrom": "mfilda_leads",
+          "tableTo": "mfilda_users",
+          "columnsFrom": [
+            "submitted_by_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.mfilda_reclamacoes": {
+      "name": "mfilda_reclamacoes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "submitted_by_user_id": {
+          "name": "submitted_by_user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "submitted_by_username": {
+          "name": "submitted_by_username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "submitted_by_full_name": {
+          "name": "submitted_by_full_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "mfilda_reclamacoes_submitted_by_user_id_mfilda_users_id_fk": {
+          "name": "mfilda_reclamacoes_submitted_by_user_id_mfilda_users_id_fk",
+          "tableFrom": "mfilda_reclamacoes",
+          "tableTo": "mfilda_users",
+          "columnsFrom": [
+            "submitted_by_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.mfilda_sessions": {
+      "name": "mfilda_sessions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "mfilda_sessions_user_id_mfilda_users_id_fk": {
+          "name": "mfilda_sessions_user_id_mfilda_users_id_fk",
+          "tableFrom": "mfilda_sessions",
+          "tableTo": "mfilda_users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.mfilda_users": {
+      "name": "mfilda_users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password_hash": {
+          "name": "password_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "full_name": {
+          "name": "full_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'staff'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "mfilda_users_username_unique": {
+          "name": "mfilda_users_username_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "username"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

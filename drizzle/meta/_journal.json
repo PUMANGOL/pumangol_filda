@@ -8,6 +8,13 @@
       "when": 1783680024294,
       "tag": "0000_fair_squirrel_girl",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1784276113369,
+      "tag": "0001_black_diamondback",
+      "breakpoints": true
     }
   ]
 }

@@ -124,3 +124,18 @@ export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
 export type Lead = typeof leads.$inferSelect;
 export type NewLead = typeof leads.$inferInsert;
+
+export const reclamacoes = pgTable("mfilda_reclamacoes", {
+  id: serial("id").primaryKey(),
+  category: text("category").notNull(),
+  description: text("description").notNull(),
+  submittedByUserId: integer("submitted_by_user_id").references(
+    () => users.id
+  ),
+  submittedByUsername: text("submitted_by_username"),
+  submittedByFullName: text("submitted_by_full_name"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type Reclamacao = typeof reclamacoes.$inferSelect;
+export type NewReclamacao = typeof reclamacoes.$inferInsert;
