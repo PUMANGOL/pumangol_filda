@@ -39,6 +39,7 @@ export async function GET() {
     { header: "#", key: "ordem", width: 8 },
     { header: "Data/Hora", key: "createdAt", width: 20 },
     { header: "Categoria", key: "category", width: 24 },
+    { header: "Posto", key: "postoNome", width: 28 },
     { header: "Descrição", key: "description", width: 48 },
     { header: "Registado por", key: "submittedByFullName", width: 22 },
   ];
@@ -61,6 +62,7 @@ export async function GET() {
       ordem: i + 1,
       createdAt: new Date(row.createdAt).toLocaleString("pt-PT"),
       category: row.category,
+      postoNome: row.postoNome ?? "",
       description: htmlToPlainText(row.description),
       submittedByFullName: submittedByLabel(
         row.submittedByFullName,

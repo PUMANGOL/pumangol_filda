@@ -4,7 +4,10 @@ import { useEffect, useState, useTransition } from "react";
 import { X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import type { ReclamacaoCategory } from "@/lib/reclamacoes/constants";
-import { RECLAMACAO_CATEGORIES } from "@/lib/reclamacoes/constants";
+import {
+  RECLAMACAO_CATEGORIES,
+  categoryRequiresPosto,
+} from "@/lib/reclamacoes/constants";
 import { createReclamacao } from "@/app/reclamacoes/actions";
 import { Button } from "@/components/ui/primitives/button";
 import { Label } from "@/components/ui/primitives/label";
@@ -29,6 +32,9 @@ export function AddReclamacaoModal({
   onCreated,
 }: AddReclamacaoModalProps) {
   const [category, setCategory] = useState<ReclamacaoCategory | "">("");
+  const [postoNome, setPostoNome] = useState("");
+  const [postos, setPostos] = useState<string[]>([]);
+  const [postosLoading, setPostosLoading] = useState(false);
   const [description, setDescription] = useState("");
   const [editorKey, setEditorKey] = useState(0);
   const [pending, startTransition] = useTransition();
@@ -49,10 +55,44 @@ export function AddReclamacaoModal({
   useEffect(() => {
     if (open) {
       setCategory("");
+      setPostoNome("");
+      setPostos([]);
       setDescription("");
       setEditorKey((k) => k + 1);
     }
   }, [open]);
+
+  const needsPosto =
+    category !== "" && categoryRequiresPosto(category as ReclamacaoCategory);
+
+  useEffect(() => {
+    if (!open || !needsPosto) {
+      return;
+    }
+
+    let cancelled = false;
+    setPostosLoading(true);
+    fetch("/api/reclamacoes/postos")
+      .then((res) => res.json())
+      .then((data: { postos?: string[] }) => {
+        if (!cancelled) {
+          setPostos(data.postos ?? []);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          toast.error("Não foi possível carregar os postos.");
+          setPostos([]);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setPostosLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open, needsPosto]);
 
   if (!open) return null;
 
@@ -62,9 +102,17 @@ export function AddReclamacaoModal({
       toast.error("Seleccione a categoria.");
       return;
     }
+    if (needsPosto && !postoNome) {
+      toast.error("Seleccione o posto de abastecimento.");
+      return;
+    }
 
     startTransition(async () => {
-      const result = await createReclamacao({ category, description });
+      const result = await createReclamacao({
+        category,
+        description,
+        postoNome: needsPosto ? postoNome : undefined,
+      });
       if (!result.success) {
         toast.error(result.error);
         return;
@@ -109,7 +157,13 @@ export function AddReclamacaoModal({
             <Label htmlFor="reclamacao-categoria">Categoria</Label>
             <Select
               value={category}
-              onValueChange={(v) => setCategory(v as ReclamacaoCategory)}
+              onValueChange={(v) => {
+                const next = v as ReclamacaoCategory;
+                setCategory(next);
+                if (!categoryRequiresPosto(next)) {
+                  setPostoNome("");
+                }
+              }}
             >
               <SelectTrigger id="reclamacao-categoria" className="w-full">
                 <SelectValue placeholder="Seleccionar categoria" />
@@ -123,6 +177,36 @@ export function AddReclamacaoModal({
               </SelectContent>
             </Select>
           </div>
+
+          {needsPosto && (
+            <div className="space-y-2">
+              <Label htmlFor="reclamacao-posto">Posto de abastecimento</Label>
+              <Select
+                value={postoNome}
+                onValueChange={setPostoNome}
+                disabled={postosLoading || postos.length === 0}
+              >
+                <SelectTrigger id="reclamacao-posto" className="w-full">
+                  <SelectValue
+                    placeholder={
+                      postosLoading
+                        ? "A carregar postos..."
+                        : postos.length === 0
+                          ? "Sem postos disponíveis"
+                          : "Seleccionar posto"
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {postos.map((posto) => (
+                    <SelectItem key={posto} value={posto}>
+                      {posto}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label>Descrição</Label>

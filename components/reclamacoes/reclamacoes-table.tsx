@@ -137,6 +137,9 @@ export function ReclamacoesTable() {
                   <th className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap">
                     Categoria
                   </th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap hidden sm:table-cell">
+                    Posto
+                  </th>
                   <th className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap">
                     Descrição
                   </th>
@@ -164,6 +167,9 @@ export function ReclamacoesTable() {
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-medium">
                           {row.category}
                         </span>
+                      </td>
+                      <td className="px-4 py-3 hidden sm:table-cell text-slate-700 text-xs max-w-[12rem] truncate">
+                        {row.postoNome ?? "—"}
                       </td>
                       <td className="px-4 py-3 max-w-md">
                         <p className="text-slate-800 line-clamp-2">{preview}</p>

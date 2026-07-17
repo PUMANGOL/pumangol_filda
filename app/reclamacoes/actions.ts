@@ -4,13 +4,28 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { reclamacoes } from "@/lib/db/schema";
 import { getSessionOrPortal } from "@/lib/auth/portal";
-import { RECLAMACAO_CATEGORIES } from "@/lib/reclamacoes/constants";
+import {
+  RECLAMACAO_CATEGORIES,
+  categoryRequiresPosto,
+} from "@/lib/reclamacoes/constants";
+import { listPostosAbastecimento } from "@/lib/reclamacoes/postos";
 import { isHtmlEffectivelyEmpty } from "@/lib/html";
 
-const createSchema = z.object({
-  category: z.enum(RECLAMACAO_CATEGORIES),
-  description: z.string().min(1),
-});
+const createSchema = z
+  .object({
+    category: z.enum(RECLAMACAO_CATEGORIES),
+    description: z.string().min(1),
+    postoNome: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (categoryRequiresPosto(data.category) && !data.postoNome?.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Seleccione o posto de abastecimento.",
+        path: ["postoNome"],
+      });
+    }
+  });
 
 export type CreateReclamacaoInput = z.infer<typeof createSchema>;
 
@@ -35,11 +50,22 @@ export async function createReclamacao(
     return { success: false, error: "A descrição é obrigatória." };
   }
 
+  let postoNome: string | null = null;
+  if (categoryRequiresPosto(parsed.data.category)) {
+    const allowed = await listPostosAbastecimento();
+    const chosen = parsed.data.postoNome?.trim() ?? "";
+    if (!allowed.includes(chosen)) {
+      return { success: false, error: "Posto de abastecimento inválido." };
+    }
+    postoNome = chosen;
+  }
+
   try {
     const [row] = await db
       .insert(reclamacoes)
       .values({
         category: parsed.data.category,
+        postoNome,
         description: parsed.data.description.trim(),
         submittedByUserId: auth.kind === "session" ? auth.userId : null,
         submittedByUsername:

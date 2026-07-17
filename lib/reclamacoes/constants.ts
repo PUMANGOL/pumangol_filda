@@ -5,3 +5,7 @@ export const RECLAMACAO_CATEGORIES = [
 ] as const;
 
 export type ReclamacaoCategory = (typeof RECLAMACAO_CATEGORIES)[number];
+
+export function categoryRequiresPosto(category: ReclamacaoCategory): boolean {
+  return category === "Frota+" || category === "Atendimento ao cliente";
+}

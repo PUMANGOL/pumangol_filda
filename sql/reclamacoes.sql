@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS mfilda_reclamacoes (
 
   description TEXT NOT NULL,
 
+  posto_nome TEXT,
+
   submitted_by_user_id INTEGER REFERENCES mfilda_users(id),
   submitted_by_username TEXT,
   submitted_by_full_name TEXT,

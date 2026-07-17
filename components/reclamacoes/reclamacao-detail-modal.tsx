@@ -51,6 +51,12 @@ export function ReclamacaoDetailModal({
         </div>
 
         <div className="px-6 py-5 space-y-4 text-sm">
+          {reclamacao.postoNome && (
+            <div>
+              <p className="font-semibold text-slate-600 mb-1">Posto</p>
+              <p className="text-slate-700">{reclamacao.postoNome}</p>
+            </div>
+          )}
           <div>
             <p className="font-semibold text-slate-600 mb-1">Registado por</p>
             <p className="text-slate-700">
