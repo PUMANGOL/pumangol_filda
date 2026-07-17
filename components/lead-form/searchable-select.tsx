@@ -25,6 +25,10 @@ type SearchableSelectProps = {
   placeholder?: string;
   error?: string;
   className?: string;
+  disabled?: boolean;
+  /** When false, only options from the list can be selected (default: true). */
+  allowCreate?: boolean;
+  id?: string;
 };
 
 export function SearchableSelect({
@@ -34,6 +38,9 @@ export function SearchableSelect({
   placeholder,
   error,
   className,
+  disabled = false,
+  allowCreate = true,
+  id,
 }: SearchableSelectProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState(value);
@@ -44,7 +51,7 @@ export function SearchableSelect({
   const trimmedQuery = query.trim();
   const filtered = filterOptions(options, query);
   const exactMatch = options.some((option) => normalize(option) === normalize(trimmedQuery));
-  const canCreate = trimmedQuery.length > 0 && !exactMatch;
+  const canCreate = allowCreate && trimmedQuery.length > 0 && !exactMatch;
 
   useEffect(() => {
     if (!open) setQuery(value);
@@ -58,7 +65,8 @@ export function SearchableSelect({
         const trimmed = query.trim();
         if (trimmed) {
           const match = options.find((option) => normalize(option) === normalize(trimmed));
-          onChange(match ?? trimmed);
+          if (match) onChange(match);
+          else if (allowCreate) onChange(trimmed);
         }
         setOpen(false);
       }
@@ -66,13 +74,14 @@ export function SearchableSelect({
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [open, query, options, onChange]);
+  }, [open, query, options, onChange, allowCreate]);
 
   function closeAndCommit(nextQuery = query) {
     const trimmed = nextQuery.trim();
     if (trimmed) {
       const match = options.find((option) => normalize(option) === normalize(trimmed));
-      onChange(match ?? trimmed);
+      if (match) onChange(match);
+      else if (allowCreate) onChange(trimmed);
     }
     setOpen(false);
   }
@@ -105,6 +114,7 @@ export function SearchableSelect({
       <div className="relative">
         <input
           ref={inputRef}
+          id={id}
           type="text"
           role="combobox"
           aria-expanded={open}
@@ -112,18 +122,22 @@ export function SearchableSelect({
           aria-autocomplete="list"
           value={open ? query : value}
           onChange={(event) => {
+            if (disabled) return;
             setQuery(event.target.value);
             setOpen(true);
           }}
           onFocus={() => {
+            if (disabled) return;
             setQuery(value);
             setOpen(true);
           }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
+          disabled={disabled}
           className={cn(
             "flex h-11 w-full min-w-0 rounded-xl border bg-white px-4 py-3 pr-10 text-base text-foreground shadow-xs transition-colors outline-none placeholder:text-muted-foreground",
             "focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring/20",
+            disabled && "cursor-not-allowed opacity-60",
             error
               ? "border-destructive focus-visible:ring-destructive/20"
               : "border-input",
@@ -139,11 +153,11 @@ export function SearchableSelect({
         />
       </div>
 
-      {open && (
+      {open && !disabled && (
         <ul
           id={listId}
           role="listbox"
-          className="absolute right-0 left-0 z-50 mt-1 max-h-60 overflow-y-auto rounded-xl border border-border bg-white py-1 shadow-md"
+          className="absolute right-0 left-0 z-[100] mt-1 max-h-60 overflow-y-auto rounded-xl border border-border bg-white py-1 shadow-md"
         >
           {canCreate && (
             <li

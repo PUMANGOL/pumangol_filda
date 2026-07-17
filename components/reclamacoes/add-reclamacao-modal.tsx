@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/primitives/select";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import { SearchableSelect } from "@/components/lead-form/searchable-select";
 
 type AddReclamacaoModalProps = {
   open: boolean;
@@ -181,30 +182,22 @@ export function AddReclamacaoModal({
           {needsPosto && (
             <div className="space-y-2">
               <Label htmlFor="reclamacao-posto">Posto de abastecimento</Label>
-              <Select
+              <SearchableSelect
+                id="reclamacao-posto"
                 value={postoNome}
-                onValueChange={setPostoNome}
+                onChange={setPostoNome}
+                options={postos}
+                allowCreate={false}
                 disabled={postosLoading || postos.length === 0}
-              >
-                <SelectTrigger id="reclamacao-posto" className="w-full">
-                  <SelectValue
-                    placeholder={
-                      postosLoading
-                        ? "A carregar postos..."
-                        : postos.length === 0
-                          ? "Sem postos disponíveis"
-                          : "Seleccionar posto"
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {postos.map((posto) => (
-                    <SelectItem key={posto} value={posto}>
-                      {posto}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                placeholder={
+                  postosLoading
+                    ? "A carregar postos..."
+                    : postos.length === 0
+                      ? "Sem postos disponíveis"
+                      : "Pesquisar ou seleccionar posto"
+                }
+                className="h-10"
+              />
             </div>
           )}
 
