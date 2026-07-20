@@ -4,10 +4,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { reclamacoes } from "@/lib/db/schema";
 import { getSessionOrPortal } from "@/lib/auth/portal";
-import {
-  RECLAMACAO_CATEGORIES,
-  categoryRequiresPosto,
-} from "@/lib/reclamacoes/constants";
+import { categoryRequiresPosto } from "@/lib/reclamacoes/constants";
 import { listPostosAbastecimento } from "@/lib/reclamacoes/postos";
 import { isHtmlEffectivelyEmpty } from "@/lib/html";
 
@@ -22,7 +19,7 @@ const createSchema = z
         (v) => !v?.trim() || z.string().email().safeParse(v.trim()).success,
         "E-mail inválido."
       ),
-    category: z.enum(RECLAMACAO_CATEGORIES),
+    category: z.string().trim().min(1, "Categoria obrigatória."),
     description: z.string().min(1),
     postoNome: z.string().optional(),
   })
@@ -76,7 +73,7 @@ export async function createReclamacao(
         nome: parsed.data.nome.trim(),
         telefone: parsed.data.telefone?.trim() || null,
         email: parsed.data.email?.trim() || null,
-        category: parsed.data.category,
+        category: parsed.data.category.trim(),
         postoNome,
         description: parsed.data.description.trim(),
         submittedByUserId: auth.kind === "session" ? auth.userId : null,

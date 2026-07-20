@@ -6,6 +6,7 @@ export const RECLAMACAO_CATEGORIES = [
 
 export type ReclamacaoCategory = (typeof RECLAMACAO_CATEGORIES)[number];
 
-export function categoryRequiresPosto(category: ReclamacaoCategory): boolean {
+/** Posto só é obrigatório para estas categorias conhecidas (não para categorias livres). */
+export function categoryRequiresPosto(category: string): boolean {
   return category === "Frota+" || category === "Atendimento ao cliente";
 }

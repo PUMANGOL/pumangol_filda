@@ -3,7 +3,6 @@
 import { useEffect, useState, useTransition } from "react";
 import { X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import type { ReclamacaoCategory } from "@/lib/reclamacoes/constants";
 import {
   RECLAMACAO_CATEGORIES,
   categoryRequiresPosto,
@@ -12,13 +11,6 @@ import { createReclamacao } from "@/app/reclamacoes/actions";
 import { Button } from "@/components/ui/primitives/button";
 import { Input } from "@/components/ui/primitives/input";
 import { Label } from "@/components/ui/primitives/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/primitives/select";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { SearchableSelect } from "@/components/lead-form/searchable-select";
 
@@ -33,7 +25,9 @@ export function AddReclamacaoModal({
   onClose,
   onCreated,
 }: AddReclamacaoModalProps) {
-  const [category, setCategory] = useState<ReclamacaoCategory | "">("");
+  const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState<string[]>([...RECLAMACAO_CATEGORIES]);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
   const [email, setEmail] = useState("");
@@ -70,8 +64,35 @@ export function AddReclamacaoModal({
     }
   }, [open]);
 
-  const needsPosto =
-    category !== "" && categoryRequiresPosto(category as ReclamacaoCategory);
+  useEffect(() => {
+    if (!open) return;
+
+    let cancelled = false;
+    setCategoriesLoading(true);
+    fetch("/api/reclamacoes/categories")
+      .then((res) => res.json())
+      .then((data: { categories?: string[] }) => {
+        if (!cancelled) {
+          setCategories(
+            data.categories?.length ? data.categories : [...RECLAMACAO_CATEGORIES]
+          );
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setCategories([...RECLAMACAO_CATEGORIES]);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setCategoriesLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
+
+  const needsPosto = category !== "" && categoryRequiresPosto(category);
 
   useEffect(() => {
     if (!open || !needsPosto) {
@@ -104,14 +125,24 @@ export function AddReclamacaoModal({
 
   if (!open) return null;
 
+  function handleCategoryChange(next: string) {
+    setCategory(next);
+    if (next && !categories.includes(next)) {
+      setCategories((prev) => [...prev, next]);
+    }
+    if (!categoryRequiresPosto(next)) {
+      setPostoNome("");
+    }
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!nome.trim()) {
       toast.error("Indique o nome.");
       return;
     }
-    if (!category) {
-      toast.error("Seleccione a categoria.");
+    if (!category.trim()) {
+      toast.error("Seleccione ou adicione a categoria.");
       return;
     }
     if (needsPosto && !postoNome) {
@@ -124,7 +155,7 @@ export function AddReclamacaoModal({
         nome,
         telefone,
         email,
-        category,
+        category: category.trim(),
         description,
         postoNome: needsPosto ? postoNome : undefined,
       });
@@ -209,27 +240,20 @@ export function AddReclamacaoModal({
 
           <div className="space-y-2">
             <Label htmlFor="reclamacao-categoria">Categoria</Label>
-            <Select
+            <SearchableSelect
+              id="reclamacao-categoria"
               value={category}
-              onValueChange={(v) => {
-                const next = v as ReclamacaoCategory;
-                setCategory(next);
-                if (!categoryRequiresPosto(next)) {
-                  setPostoNome("");
-                }
-              }}
-            >
-              <SelectTrigger id="reclamacao-categoria" className="w-full">
-                <SelectValue placeholder="Seleccionar categoria" />
-              </SelectTrigger>
-              <SelectContent>
-                {RECLAMACAO_CATEGORIES.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              onChange={handleCategoryChange}
+              options={categories}
+              allowCreate
+              disabled={pending || categoriesLoading}
+              placeholder={
+                categoriesLoading
+                  ? "A carregar categorias..."
+                  : "Pesquisar, seleccionar ou adicionar categoria"
+              }
+              className="h-10"
+            />
           </div>
 
           {needsPosto && (

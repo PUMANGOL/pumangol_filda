@@ -31,8 +31,28 @@ export function ReclamacoesTable() {
   const [searchInput, setSearchInput] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [selected, setSelected] = useState<Reclamacao | null>(null);
+  const [categoryOptions, setCategoryOptions] = useState<string[]>([
+    ...RECLAMACAO_CATEGORIES,
+  ]);
 
   const limit = 20;
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/reclamacoes/categories")
+      .then((res) => res.json())
+      .then((data: { categories?: string[] }) => {
+        if (!cancelled && data.categories?.length) {
+          setCategoryOptions(data.categories);
+        }
+      })
+      .catch(() => {
+        /* keep defaults */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const fetchRows = useCallback(async () => {
     setLoading(true);
@@ -97,7 +117,7 @@ export function ReclamacoesTable() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todas as categorias</SelectItem>
-              {RECLAMACAO_CATEGORIES.map((cat) => (
+              {categoryOptions.map((cat) => (
                 <SelectItem key={cat} value={cat}>
                   {cat}
                 </SelectItem>
