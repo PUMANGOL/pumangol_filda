@@ -118,6 +118,7 @@ const EMPRESA_SOLUTIONS = [
   { value: "frota_mais", label: "Frota+" },
   { value: "cartao_presente", label: "Cartão Presente" },
   { value: "angobetumes", label: BETUMES_EMULSAO_LABEL },
+  { value: "academia", label: "Academia de Formação" },
   { value: "patrocinios", label: "Patrocínios" },
   { value: "outros", label: "Outros" },
 ];
@@ -716,7 +717,7 @@ export function LeadForm({ submittedBy }: { submittedBy?: string }) {
                       </div>
                     )}
 
-                    {isParticular && data.solutions.includes("academia") && (
+                    {data.solutions.includes("academia") && (
                       <div>
                         <SectionTitle>Academia de Formação — Áreas de interesse</SectionTitle>
                         <div className="grid sm:grid-cols-2 gap-2">
@@ -843,7 +844,7 @@ export function LeadForm({ submittedBy }: { submittedBy?: string }) {
                         <div>
                           <Label className="mb-2 block text-sm">Interesse:</Label>
                           <div className="grid sm:grid-cols-2 gap-2">
-                            {[["projeto_proprio", "Projeto próprio"], ["parceria", "Parceria"]].map(([v, l]) => (
+                            {[["empresa", "Empresa"], ["parceria", "Parceria"]].map(([v, l]) => (
                               <RadioOption key={v} name="angobetInt" value={v!} label={l!} currentValue={data.angobetumesInterest} onChange={v => set("angobetumesInterest", v)} />
                             ))}
                           </div>

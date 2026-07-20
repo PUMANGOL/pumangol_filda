@@ -69,7 +69,7 @@ const ROWS = [
   { criterio: 3, dimensao: "Potencial", maxDim: 20, secao: "Frota+ (condicional)", campo: "frota_interest", opcao: "Uso pessoal", perfil: "Empresa / Órgão Público", notas: "Aparece se Frota+ seleccionado" },
   { criterio: 3, dimensao: "Potencial", maxDim: 20, secao: "Frota+ (condicional)", campo: "frota_interest", opcao: "Gestão de frota", perfil: "Empresa / Órgão Público", notas: "Aparece se Frota+ seleccionado" },
 
-  { criterio: 3, dimensao: "Potencial", maxDim: 20, secao: "Betumes e Emulsão (condicional)", campo: "angobetumes_interest", opcao: "Projeto próprio", perfil: "Empresa / Órgão Público", notas: "Aparece se Betumes e Emulsão seleccionado" },
+  { criterio: 3, dimensao: "Potencial", maxDim: 20, secao: "Betumes e Emulsão (condicional)", campo: "angobetumes_interest", opcao: "Empresa", perfil: "Empresa / Órgão Público", notas: "Aparece se Betumes e Emulsão seleccionado" },
   { criterio: 3, dimensao: "Potencial", maxDim: 20, secao: "Betumes e Emulsão (condicional)", campo: "angobetumes_interest", opcao: "Construção", perfil: "Empresa / Órgão Público", notas: "Aparece se Betumes e Emulsão seleccionado" },
   { criterio: 3, dimensao: "Potencial", maxDim: 20, secao: "Betumes e Emulsão (condicional)", campo: "angobetumes_interest", opcao: "Revenda", perfil: "Empresa / Órgão Público", notas: "Aparece se Betumes e Emulsão seleccionado" },
   { criterio: 3, dimensao: "Potencial", maxDim: 20, secao: "Betumes e Emulsão (condicional)", campo: "angobetumes_interest", opcao: "Parceria", perfil: "Empresa / Órgão Público", notas: "Aparece se Betumes e Emulsão seleccionado" },

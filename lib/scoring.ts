@@ -50,7 +50,7 @@ const INTEREST_PARTICULAR: Record<string, number> = {
   lubrificantes: 10,
   via: 10,
   cartao_presente: 5,
-  academia: 10, // Academia no Excel está em Empresa; formulário expõe a Particular
+  academia: 10,
   patrocinios: 5,
   outros: 5,
 };
@@ -112,7 +112,7 @@ const LUBRICANT_TYPE_PARTICULAR_SCORES: Record<string, number> = {
 };
 
 const ANGOBETUMES_INTEREST_SCORES: Record<string, number> = {
-  projeto_proprio: 10,
+  empresa: 10,
   parceria: 10,
 };
 
