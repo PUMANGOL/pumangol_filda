@@ -32,7 +32,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href={ROUTES.interno} className="hover:text-pumangol-yellow transition-colors">
+                <Link href={ROUTES.dashboard} className="hover:text-pumangol-yellow transition-colors">
                   Área Colaboradores
                 </Link>
               </li>
