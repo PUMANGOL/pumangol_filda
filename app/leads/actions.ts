@@ -61,10 +61,8 @@ export type CreateLeadResult =
   | { success: false; error: string };
 
 export async function createLead(input: CreateLeadInput): Promise<CreateLeadResult> {
+  // Público em /registar (externos); com sessão/portal em /leads/new e my-pumangol
   const auth = await getSessionOrPortal();
-  if (!auth) {
-    return { success: false, error: "Não autenticado." };
-  }
 
   const parsed = leadSchema.safeParse(input);
   if (!parsed.success) {
@@ -142,11 +140,19 @@ export async function createLead(input: CreateLeadInput): Promise<CreateLeadResu
         scoreContact: score.scoreContact,
         totalScore: score.totalScore,
         classification: score.classification,
-        submittedByUserId: auth.kind === "session" ? auth.userId : null,
+        submittedByUserId: auth?.kind === "session" ? auth.userId : null,
         submittedByUsername:
-          auth.kind === "session" ? auth.username : auth.email,
+          auth?.kind === "session"
+            ? auth.username
+            : auth?.kind === "portal"
+              ? auth.email
+              : null,
         submittedByFullName:
-          auth.kind === "session" ? auth.fullName : auth.email,
+          auth?.kind === "session"
+            ? auth.fullName
+            : auth?.kind === "portal"
+              ? auth.email
+              : null,
       })
       .returning({ id: leads.id });
 
